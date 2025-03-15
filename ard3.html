@@ -9,93 +9,67 @@
     <script type="text/javascript" src="https://raw.githack.com/AR-js-org/AR.js/3.4.5/aframe/build/aframe-ar.js"></script>
     
     <script>
+      function computeOffset(lat, lon, distance, angle) {
+        const earthRadius = 6378137; // Raio da Terra em metros
+        const deltaLat = (distance * Math.cos(angle)) / earthRadius * (180 / Math.PI);
+        const deltaLon = (distance * Math.sin(angle)) / (earthRadius * Math.cos(lat * Math.PI / 180)) * (180 / Math.PI);
+
+        return { lat: lat + deltaLat, lon: lon + deltaLon };
+      }
+
       AFRAME.registerComponent('dynamic-movement', {
         schema: {
-          type: { type: 'string' }, // "spin"
-          speed: { type: 'number', default: 0.0001 }, // Speed of orbit
-          originLat: { type: 'number' }, // User's initial latitude
-          originLon: { type: 'number' }, // User's initial longitude
-          distance: { type: 'number' } // Orbit radius
+          speed: { type: 'number', default: 0.0001 },
+          originLat: { type: 'number' },
+          originLon: { type: 'number' },
+          distance: { type: 'number' }
         },
         init() {
-          const camera = document.querySelector('[gps-new-camera]');
-          this.originalLat = parseFloat(camera.getAttribute('gps-new-camera').latitude);
-          this.originalLon = parseFloat(camera.getAttribute('gps-new-camera').longitude);
-          this.angle = Math.random() * Math.PI * 2; 
+          this.angle = Math.random() * Math.PI * 2; // Começa em um ângulo aleatório
         },
         tick(time, timeDelta) {
-          if (this.data.type === "spin") {
-            this.angle += this.data.speed * timeDelta;
-            const newCoords = computeOffset(this.data.originLat, this.data.originLon, this.data.distance, this.angle * (180 / Math.PI));
-            this.el.setAttribute('gps-new-entity-place', { latitude: newCoords.lat, longitude: newCoords.lon });
-          }
+          this.angle += this.data.speed * timeDelta * 0.001; // Ajuste de tempo
+          const newCoords = computeOffset(this.data.originLat, this.data.originLon, this.data.distance, this.angle * (180 / Math.PI));
+          this.el.setAttribute('gps-new-entity-place', { latitude: newCoords.lat, longitude: newCoords.lon });
         }
       });
 
-       // Component to show a plane on click
-       AFRAME.registerComponent('show-plane', {
-        schema: {
-          color: { type: 'string', default: 'white' }
-        },
-        init() {
-          this.el.addEventListener('click', this.showPlane.bind(this));
-        },
-        showPlane() {
-          const camera = document.querySelector('[gps-new-camera]');
-
-          if (document.querySelector('#infoPlane')) return;
-
-          const plane = document.createElement('a-plane');
-          plane.setAttribute("position", { x: 0, y: 0, z: -2 });
-          plane.setAttribute("width", 2);
-          plane.setAttribute("height", 1);
-          plane.setAttribute("color", this.data.color);
-          plane.setAttribute("material", { opacity: 0.8, transparent: true });
-          plane.setAttribute("id", "infoPlane");
-          plane.setAttribute("look-at", "[gps-new-camera]");
-
-          plane.addEventListener("click", () => {
-            camera.removeChild(plane);
-          });
-
-          camera.appendChild(plane);
-        }
-      });
-
-      function createSun(lat, lon) {
-        console.log("Criando Sol em:", lat, lon);
+      function createSolarSystem(lat, lon) {
+        console.log("Criando Sol e planetas em:", lat, lon);
         const scene = document.querySelector("a-scene");
+
+        // Criar o Sol
         const sun = document.createElement("a-sphere");
         sun.setAttribute("radius", "2");
         sun.setAttribute("color", "yellow");
         sun.setAttribute("gps-new-entity-place", `latitude: ${lat}; longitude: ${lon}`);
         scene.appendChild(sun);
-      }
 
-      function createPlanets(lat, lon) {
-        console.log("Criando planetas em torno de:", lat, lon);
+        // Dados dos planetas
         const planetsData = [
-          { color: "red", distance: 5, speed: 0.0005 }, 
-          { color: "blue", distance: 10, speed: 0.0003 },
-          { color: "green", distance: 15, speed: 0.0002 }
+          { color: "red", distance: 5, speed: 0.05 },
+          { color: "blue", distance: 10, speed: 0.03 },
+          { color: "green", distance: 15, speed: 0.02 }
         ];
 
-        const scene = document.querySelector("a-scene");
-
+        // Criar órbitas e planetas
         planetsData.forEach((data) => {
-          const entity = document.createElement("a-entity");
-          
-          // Posicionar os planetas ao redor do Sol
-          const planetLat = lat + data.distance;
-          const planetLon = lon + data.distance;
+          const orbit = document.createElement("a-ring");
+          orbit.setAttribute("radius-inner", data.distance - 0.1);
+          orbit.setAttribute("radius-outer", data.distance + 0.1);
+          orbit.setAttribute("color", "white");
+          orbit.setAttribute("gps-new-entity-place", `latitude: ${lat}; longitude: ${lon}`);
+          orbit.setAttribute("rotation", "-90 0 0");
+          scene.appendChild(orbit);
 
-          entity.setAttribute("gps-new-entity-place", `latitude: ${planetLat}; longitude: ${planetLon}`);
+          const entity = document.createElement("a-entity");
+          entity.setAttribute("gps-new-entity-place", `latitude: ${lat}; longitude: ${lon}`);
 
           const sphere = document.createElement("a-sphere");
           sphere.setAttribute("radius", "1.25");
           sphere.setAttribute("color", data.color);
           sphere.setAttribute("shadow", "");
-          sphere.setAttribute("dynamic-movement", `distance: ${data.distance}; speed: ${data.speed}`);
+          sphere.setAttribute("dynamic-movement", `distance: ${data.distance}; speed: ${data.speed}; originLat: ${lat}; originLon: ${lon}`);
 
           entity.appendChild(sphere);
           scene.appendChild(entity);
@@ -108,8 +82,7 @@
 
         console.log("GPS localizado:", lat, lon);
 
-        createSun(lat, lon);
-        createPlanets(lat, lon);
+        createSolarSystem(lat, lon);
       });
     </script>
   </head>
