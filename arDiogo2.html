@@ -31,6 +31,7 @@
       });
 
       function createSun(lat, lon) {
+        console.log("Criando Sol em:", lat, lon);
         const scene = document.querySelector("a-scene");
         const sun = document.createElement("a-sphere");
         sun.setAttribute("radius", "2");
@@ -40,6 +41,7 @@
       }
 
       function createPlanets(lat, lon) {
+        console.log("Criando planetas em torno de:", lat, lon);
         const planetsData = [
           { color: "red", distance: 0.00005, speed: 0.00005 }, 
           { color: "blue", distance: 0.00007, speed: 0.00003 },
@@ -50,7 +52,12 @@
 
         planetsData.forEach((data) => {
           const entity = document.createElement("a-entity");
-          entity.setAttribute("gps-new-entity-place", `latitude: ${lat}; longitude: ${lon}`);
+          
+          // Posicionar os planetas ao redor do Sol
+          const planetLat = lat + data.distance;
+          const planetLon = lon + data.distance;
+
+          entity.setAttribute("gps-new-entity-place", `latitude: ${planetLat}; longitude: ${planetLon}`);
 
           const sphere = document.createElement("a-sphere");
           sphere.setAttribute("radius", "1.25");
