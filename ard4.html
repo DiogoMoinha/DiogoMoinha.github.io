@@ -52,21 +52,36 @@
       function createPlanets(lat, lon) {
         console.log("Criando planetas em torno de:", lat, lon);
         const planetsData = [
-          { color: "red", distance: 0.00005, speed: 0.0001 }, 
-          { color: "blue", distance: 0.0001, speed: 0.00007 },
-          { color: "green", distance: 0.00015, speed: 0.00005 }
+          { color: "red", distance: 5, speed: 0.0001 }, 
+          { color: "blue", distance: 10, speed: 0.0007 },
+          { color: "green", distance: 15, speed: 0.0005 }
         ];
 
         const scene = document.querySelector("a-scene");
 
-        planetsData.forEach((data, index) => {
-          const planet = document.createElement("a-sphere");
-          planet.setAttribute("radius", "1.25");
-          planet.setAttribute("color", data.color);
-          planet.setAttribute("shadow", "");
-          planet.setAttribute("dynamic-movement", `originLat: ${lat}; originLon: ${lon}; distance: ${data.distance}; speed: ${data.speed}`);
-          scene.appendChild(planet);
-        });
+        spheresData.forEach((data) => {
+              const coords = computeOffset(userLat, userLon, data.distance, 0); // Start at 0° angle
+
+              const entity = document.createElement("a-entity");
+              entity.setAttribute("cursor","rayOrigin:mouse");
+
+              const sphere = document.createElement("a-sphere");
+              sphere.setAttribute("gps-new-entity-place", { latitude: coords.lat, longitude: coords.lon });
+              sphere.setAttribute("radius", 1.25);
+              sphere.setAttribute("color", data.color);
+              sphere.setAttribute("shadow", "");
+              sphere.setAttribute("show-plane", { color: data.color });
+              sphere.setAttribute("dynamic-movement", { 
+                  type: "spin", 
+                  speed: data.speed, 
+                  originLat: userLat, 
+                  originLon: userLon, 
+                  distance: data.distance 
+              });
+
+              entity.appendChild(sphere);
+              scene.appendChild(entity);
+          });
       }
 
       document.addEventListener("gps-camera-update-position", (event) => {
