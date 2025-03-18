@@ -50,7 +50,7 @@
 
       const scene = document.querySelector("a-scene");
 
-      spheresData.forEach((data) => {
+      sun.forEach((data) => {
           const coords = computeOffset(userLat, userLon, data.distance, 0); // Start at 0° angle
 
           const entity = document.createElement("a-entity");
