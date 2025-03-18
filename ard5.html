@@ -82,6 +82,7 @@
                       const userLat = position.coords.latitude;
                       const userLon = position.coords.longitude;
                       createSpheres(userLat, userLon); // Create spheres around user’s initial position
+                      createSun(userLat, userLon);
                   },
                   (error) => console.error("Error getting location:", error),
                   { enableHighAccuracy: true }
