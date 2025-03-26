@@ -48,6 +48,9 @@
               entity.appendChild(sphere);
               scene.appendChild(entity);
           });
+
+          // Criar o Sol na posição do usuário
+          createSun(userLat, userLon);
       }
 
       function computeOffset(lat, lon, distance, angle) {
@@ -58,20 +61,32 @@
           return { lat: lat + deltaLat, lon: lon + deltaLon };
       }
 
+      // Criar órbitas
       function createOrbitRing(userLat, userLon, distance) {
             const scene = document.querySelector("a-scene");
 
+            // A órbita é gerada em torno da posição do Sol
             const coords = computeOffset(userLat, userLon, distance, 0);
 
             const orbitRing = document.createElement("a-ring");
-            orbitRing.setAttribute("gps-new-entity-place", `latitude: ${coords.lat}; longitude: ${coords.lon}`);
-            orbitRing.setAttribute("radius-inner", distance - 0.2); 
-            orbitRing.setAttribute("radius-outer", distance + 0.2); 
+            orbitRing.setAttribute("gps-new-entity-place", `latitude: ${userLat}; longitude: ${userLon}`);
+            orbitRing.setAttribute("radius-inner", 0.2); 
+            orbitRing.setAttribute("radius-outer", distance); // Ajusta o tamanho do anel para corresponder à distância
             orbitRing.setAttribute("color", "white");
             orbitRing.setAttribute("rotation", "-90 0 0"); // Deitado para formar um círculo
             scene.appendChild(orbitRing);
         }
 
+      // Criar o Sol
+      function createSun(userLat, userLon) {
+          const scene = document.querySelector("a-scene");
+          const sun = document.createElement("a-sphere");
+          sun.setAttribute("gps-new-entity-place", { latitude: userLat, longitude: userLon });
+          sun.setAttribute("radius", 2);
+          sun.setAttribute("color", "yellow");
+          sun.setAttribute("shadow", "");
+          scene.appendChild(sun);
+      }
 
       function initSpheres() {
           if (navigator.geolocation) {
@@ -80,7 +95,6 @@
                       const userLat = position.coords.latitude;
                       const userLon = position.coords.longitude;
                       createSpheres(userLat, userLon); // Create spheres around user’s initial position
-                      createSun(userLat, userLon);
                   },
                   (error) => console.error("Error getting location:", error),
                   { enableHighAccuracy: true }
