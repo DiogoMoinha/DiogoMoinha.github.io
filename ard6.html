@@ -10,51 +10,46 @@
     <script src="https://raw.githack.com/AR-js-org/AR.js/3.4.5/aframe/build/aframe-ar.js"></script>
 
     <script>
-        function createSpheres(userLat, userLon) {
-            const spheresData = [
-                { color: "red", distance: 5, speed: 0.0005 },
-                { color: "green", distance: 10, speed: 0.0003 },
-                { color: "blue", distance: 15, speed: 0.0002 }
-            ];
+      function createSpheres(userLat, userLon) {
+    const spheresData = [
+        { color: "red", distance: 5, speed: 0.0005 },
+        { color: "green", distance: 10, speed: 0.0003 },
+        { color: "blue", distance: 15, speed: 0.0002 },
+        { color: "yellow", distance: 0, speed: 0 } // O "sol" fixo
+    ];
 
-            const scene = document.querySelector("a-scene");
+    const scene = document.querySelector("a-scene");
 
-            // Criar o "Sol" fixo
-            const sun = document.createElement("a-sphere");
-            sun.setAttribute("gps-new-entity-place", `latitude: ${userLat}; longitude: ${userLon}`);
-            sun.setAttribute("radius", 2.5);
-            sun.setAttribute("color", "yellow");
-            scene.appendChild(sun);
+    spheresData.forEach((data) => {
+        const coords = computeOffset(userLat, userLon, data.distance, 0);
 
-            spheresData.forEach((data) => {
-                const coords = computeOffset(userLat, userLon, data.distance, 0);
+        const entity = document.createElement("a-entity");
+        entity.setAttribute("cursor", "rayOrigin:mouse");
 
-                const entity = document.createElement("a-entity");
-                entity.setAttribute("cursor", "rayOrigin:mouse");
+        const sphere = document.createElement("a-sphere");
+        sphere.setAttribute("gps-new-entity-place", { latitude: coords.lat, longitude: coords.lon });
+        sphere.setAttribute("radius", 1.25);
+        sphere.setAttribute("color", data.color);
+        sphere.setAttribute("shadow", "");
 
-                const sphere = document.createElement("a-sphere");
-                sphere.setAttribute("gps-new-entity-place", `latitude: ${coords.lat}; longitude: ${coords.lon}`);
-                sphere.setAttribute("radius", 1.25);
-                sphere.setAttribute("color", data.color);
-                sphere.setAttribute("shadow", "");
-
-                if (data.speed > 0) {
-                    sphere.setAttribute("dynamic-movement", { 
-                        type: "spin", 
-                        speed: data.speed, 
-                        originLat: userLat, 
-                        originLon: userLon, 
-                        distance: data.distance 
-                    });
-
-                    // Criar órbita
-                    createOrbitRing(userLat, userLon, data.distance);
-                }
-
-                entity.appendChild(sphere);
-                scene.appendChild(entity);
+        if (data.speed > 0) {
+            sphere.setAttribute("dynamic-movement", { 
+                type: "spin", 
+                speed: data.speed, 
+                originLat: userLat, 
+                originLon: userLon, 
+                distance: data.distance 
             });
+
+            // Criar a órbita ao redor do sol
+            createOrbitLine(userLat, userLon, data.distance, data.color);
         }
+
+        entity.appendChild(sphere);
+        scene.appendChild(entity);
+    });
+}
+
 
         function computeOffset(lat, lon, distance, angle) {
             const earthRadius = 6378137; // Raio da Terra em metros
@@ -63,19 +58,25 @@
             return { lat: lat + deltaLat, lon: lon + deltaLon };
         }
 
-        function createOrbitRing(userLat, userLon, distance) {
-            const scene = document.querySelector("a-scene");
+        function createOrbitLine(userLat, userLon, distance, color = "white") {
+    const scene = document.querySelector("a-scene");
+    const segments = 36; // Número de cilindros para formar o círculo
 
-            const coords = computeOffset(userLat, userLon, distance, 0);
+    for (let i = 0; i < segments; i++) {
+        let angle = (i / segments) * 360;
+        let coords = computeOffset(userLat, userLon, distance, angle);
 
-            const orbitRing = document.createElement("a-ring");
-            orbitRing.setAttribute("gps-new-entity-place", `latitude: ${coords.lat}; longitude: ${coords.lon}`);
-            orbitRing.setAttribute("radius-inner", distance - 0.2); 
-            orbitRing.setAttribute("radius-outer", distance + 0.2); 
-            orbitRing.setAttribute("color", "white");
-            orbitRing.setAttribute("rotation", "-90 0 0"); // Deitado para formar um círculo
-            scene.appendChild(orbitRing);
-        }
+        const orbitSegment = document.createElement("a-cylinder");
+        orbitSegment.setAttribute("gps-new-entity-place", { latitude: coords.lat, longitude: coords.lon });
+        orbitSegment.setAttribute("radius", 0.2); // Pequeno para parecer uma linha
+        orbitSegment.setAttribute("height", 0.1); // Fino para parecer uma linha
+        orbitSegment.setAttribute("color", color);
+        orbitSegment.setAttribute("rotation", "90 0 0"); // Deitado para formar o círculo
+
+        scene.appendChild(orbitSegment);
+    }
+}
+
 
         AFRAME.registerComponent('dynamic-movement', {
             schema: {
