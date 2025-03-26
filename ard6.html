@@ -81,13 +81,14 @@
         orbitSegment.setAttribute("gps-new-entity-place", `latitude: ${coords.lat}; longitude: ${coords.lon}`);
         orbitSegment.setAttribute("radius", 0.1); // Pequeno para parecer uma linha
         orbitSegment.setAttribute("height", 0.05); // Fino para parecer uma linha
-        orbitSegment.setAttribute("color", white);
+        orbitSegment.setAttribute("color", color);
         orbitSegment.setAttribute("rotation", "90 0 0"); // Deitado para formar um círculo
         orbitSegment.setAttribute("scale", "0.5 0.5 0.5");
 
         scene.appendChild(orbitSegment);
     }
 }
+
 
 
       function initSpheres() {
