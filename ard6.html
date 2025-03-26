@@ -9,7 +9,7 @@
     <script type="text/javascript" src="https://raw.githack.com/AR-js-org/AR.js/3.4.5/aframe/build/aframe-ar.js"></script>
 
     <script>
-      function createSpheres(userLat, userLon) {
+     function createSpheres(userLat, userLon) {
     const spheresData = [
         { color: "red", distance: 5, speed: 0.0005 },
         { color: "green", distance: 10, speed: 0.0003 },
@@ -26,7 +26,7 @@
         entity.setAttribute("cursor", "rayOrigin:mouse");
 
         const sphere = document.createElement("a-sphere");
-        sphere.setAttribute("gps-new-entity-place", { latitude: coords.lat, longitude: coords.lon });
+        sphere.setAttribute("gps-new-entity-place", `latitude: ${coords.lat}; longitude: ${coords.lon}`);
         sphere.setAttribute("radius", 1.25);
         sphere.setAttribute("color", data.color);
         sphere.setAttribute("shadow", "");
@@ -40,14 +40,14 @@
                 distance: data.distance 
             });
 
-            // Criar a órbita ao redor do sol
-            createOrbitLine(userLat, userLon, data.distance, data.color);
+            setTimeout(() => createOrbitLine(userLat, userLon, data.distance, data.color), 1000);
         }
 
         entity.appendChild(sphere);
         scene.appendChild(entity);
     });
 }
+
 
 
       function computeOffset(lat, lon, distance, angle) {
@@ -60,22 +60,26 @@
 
       function createOrbitLine(userLat, userLon, distance, color = "white") {
     const scene = document.querySelector("a-scene");
-    const segments = 36; // Número de cilindros para formar o círculo
+    const segments = 36; // Número de segmentos para formar a órbita
 
     for (let i = 0; i < segments; i++) {
         let angle = (i / segments) * 360;
         let coords = computeOffset(userLat, userLon, distance, angle);
 
+        console.log(`Orbit segment at: lat ${coords.lat}, lon ${coords.lon}`);
+
         const orbitSegment = document.createElement("a-cylinder");
-        orbitSegment.setAttribute("gps-new-entity-place", { latitude: coords.lat, longitude: coords.lon });
-        orbitSegment.setAttribute("radius", 0.2); // Pequeno para parecer uma linha
-        orbitSegment.setAttribute("height", 0.1); // Fino para parecer uma linha
+        orbitSegment.setAttribute("gps-new-entity-place", `latitude: ${coords.lat}; longitude: ${coords.lon}`);
+        orbitSegment.setAttribute("radius", 0.1); // Pequeno para parecer uma linha
+        orbitSegment.setAttribute("height", 0.05); // Fino para parecer uma linha
         orbitSegment.setAttribute("color", color);
-        orbitSegment.setAttribute("rotation", "90 0 0"); // Deitado para formar o círculo
+        orbitSegment.setAttribute("rotation", "90 0 0"); // Deitado para formar um círculo
+        orbitSegment.setAttribute("scale", "0.5 0.5 0.5");
 
         scene.appendChild(orbitSegment);
     }
 }
+
 
 
 
