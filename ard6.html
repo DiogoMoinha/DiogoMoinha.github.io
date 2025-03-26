@@ -40,8 +40,8 @@
                         distance: data.distance 
                     });
 
-                    // Criar órbita com cilindros brancos
-                    createOrbitLine(userLat, userLon, data.distance);
+                    // Criar órbita com um anel branco
+                    createOrbitRing(userLat, userLon, data.distance);
                 }
 
                 entity.appendChild(sphere);
@@ -56,26 +56,17 @@
             return { lat: lat + deltaLat, lon: lon + deltaLon };
         }
 
-        function createOrbitLine(userLat, userLon, distance) {
+        function createOrbitRing(userLat, userLon, distance) {
             const scene = document.querySelector("a-scene");
-            const segments = 36; // Número de cilindros na órbita
 
-            for (let i = 0; i < segments; i++) {
-                let angle = (i / segments) * 360;
-                let coords = computeOffset(userLat, userLon, distance, angle);
+            const orbitRing = document.createElement("a-ring");
+            orbitRing.setAttribute("gps-new-entity-place", `latitude: ${userLat}; longitude: ${userLon}`);
+            orbitRing.setAttribute("radius-inner", distance - 0.2); // Ajusta o tamanho interno
+            orbitRing.setAttribute("radius-outer", distance + 0.2); // Ajusta o tamanho externo
+            orbitRing.setAttribute("color", "white");
+            orbitRing.setAttribute("rotation", "-90 0 0"); // Deitado para formar um círculo
 
-                console.log(`Orbit segment at: lat ${coords.lat}, lon ${coords.lon}`);
-
-                const orbitSegment = document.createElement("a-cylinder");
-                orbitSegment.setAttribute("gps-new-entity-place", `latitude: ${coords.lat}; longitude: ${coords.lon}`);
-                orbitSegment.setAttribute("radius", 0.1); // Pequeno para parecer uma linha
-                orbitSegment.setAttribute("height", 0.05); // Fino para parecer uma linha
-                orbitSegment.setAttribute("color", "white");
-                orbitSegment.setAttribute("rotation", "90 0 0"); // Deitado para formar um círculo
-                orbitSegment.setAttribute("scale", "0.5 0.5 0.5");
-
-                scene.appendChild(orbitSegment);
-            }
+            scene.appendChild(orbitRing);
         }
 
         AFRAME.registerComponent('dynamic-movement', {
