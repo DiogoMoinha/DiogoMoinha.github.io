@@ -13,7 +13,8 @@
           const spheresData = [
               { color: "red", distance: 5, speed: 0.0005 },   // 5m from user
               { color: "green", distance: 10, speed: 0.0003 }, // 10m from user
-              { color: "blue", distance: 15, speed: 0.0002 }   // 15m from user
+              { color: "blue", distance: 15, speed: 0.0002 },   // 15m from user
+              { color: "yellow", distance: 0, speed: 0}
           ];
 
           const scene = document.querySelector("a-scene");
@@ -40,30 +41,6 @@
 
               entity.appendChild(sphere);
               scene.appendChild(entity);
-          });
-      }
-
-      function createSun(userLat, userLon) {
-        const sun =[
-        { color: "yellow", distance: 0.000001, speed: 0}
-      ]
-
-      const scene = document.querySelector("a-scene");
-
-      sun.forEach((data) => {
-          const coords = computeOffset(userLat, userLon, data.distance, 0); // Start at 0° angle
-
-          const entity = document.createElement("a-entity");
-          entity.setAttribute("cursor","rayOrigin:mouse");
-
-          const sphere = document.createElement("a-sphere");
-          sphere.setAttribute("gps-new-entity-place", { latitude: coords.lat, longitude: coords.lon });
-          sphere.setAttribute("radius", 1.25);
-          sphere.setAttribute("color", data.color);
-          sphere.setAttribute("shadow", "");
-          sphere.setAttribute("show-plane", { color: data.color });         
-          entity.appendChild(sphere);
-          scene.appendChild(entity);
           });
       }
 
