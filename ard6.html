@@ -14,11 +14,17 @@
             const spheresData = [
                 { color: "red", distance: 5, speed: 0.0005 },
                 { color: "green", distance: 10, speed: 0.0003 },
-                { color: "blue", distance: 15, speed: 0.0002 },
-                { color: "yellow", distance: 0, speed: 0}
+                { color: "blue", distance: 15, speed: 0.0002 }
             ];
 
             const scene = document.querySelector("a-scene");
+
+            // Criar o "Sol" fixo
+            const sun = document.createElement("a-sphere");
+            sun.setAttribute("gps-new-entity-place", `latitude: ${userLat}; longitude: ${userLon}`);
+            sun.setAttribute("radius", 2.5);
+            sun.setAttribute("color", "yellow");
+            scene.appendChild(sun);
 
             spheresData.forEach((data) => {
                 const coords = computeOffset(userLat, userLon, data.distance, 0);
@@ -41,7 +47,7 @@
                         distance: data.distance 
                     });
 
-                    // Criar órbita com um anel branco
+                    // Criar órbita
                     createOrbitRing(userLat, userLon, data.distance);
                 }
 
@@ -60,13 +66,14 @@
         function createOrbitRing(userLat, userLon, distance) {
             const scene = document.querySelector("a-scene");
 
+            const coords = computeOffset(userLat, userLon, distance, 0);
+
             const orbitRing = document.createElement("a-ring");
-            orbitRing.setAttribute("gps-new-entity-place", `latitude: ${userLat}; longitude: ${userLon}`);
-            orbitRing.setAttribute("radius-inner", distance - 0.2); // Ajusta o tamanho interno
-            orbitRing.setAttribute("radius-outer", distance + 0.2); // Ajusta o tamanho externo
+            orbitRing.setAttribute("gps-new-entity-place", `latitude: ${coords.lat}; longitude: ${coords.lon}`);
+            orbitRing.setAttribute("radius-inner", distance - 0.2); 
+            orbitRing.setAttribute("radius-outer", distance + 0.2); 
             orbitRing.setAttribute("color", "white");
             orbitRing.setAttribute("rotation", "-90 0 0"); // Deitado para formar um círculo
-
             scene.appendChild(orbitRing);
         }
 
