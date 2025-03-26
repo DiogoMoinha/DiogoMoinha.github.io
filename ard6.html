@@ -39,9 +39,6 @@
                   distance: data.distance 
               });
 
-               // Criar órbita
-               createOrbitRing(userLat, userLon, data.distance);
-
               entity.appendChild(sphere);
               scene.appendChild(entity);
           });
@@ -54,20 +51,6 @@
 
           return { lat: lat + deltaLat, lon: lon + deltaLon };
       }
-
-      function createOrbitRing(userLat, userLon, distance) {
-            const scene = document.querySelector("a-scene");
-
-            const coords = computeOffset(userLat, userLon, distance, 0);
-
-            const orbitRing = document.createElement("a-ring");
-            orbitRing.setAttribute("gps-new-entity-place", `latitude: ${coords.lat}; longitude: ${coords.lon}`);
-            orbitRing.setAttribute("radius-inner", distance - 0.2); 
-            orbitRing.setAttribute("radius-outer", distance + 0.2); 
-            orbitRing.setAttribute("color", "white");
-            orbitRing.setAttribute("rotation", "-90 0 0"); // Deitado para formar um círculo
-            scene.appendChild(orbitRing);
-        }
 
       function initSpheres() {
           if (navigator.geolocation) {
