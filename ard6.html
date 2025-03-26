@@ -40,16 +40,8 @@
                         distance: data.distance 
                     });
 
-                    // Criar órbita como linha branca
-                    const orbitEntity = document.createElement("a-entity");
-                    orbitEntity.setAttribute("orbit-line", { 
-                        originLat: userLat, 
-                        originLon: userLon, 
-                        distance: data.distance, 
-                        color: "white" 
-                    });
-
-                    scene.appendChild(orbitEntity);
+                    // Criar órbita com cilindros brancos
+                    createOrbitLine(userLat, userLon, data.distance);
                 }
 
                 entity.appendChild(sphere);
@@ -64,39 +56,27 @@
             return { lat: lat + deltaLat, lon: lon + deltaLon };
         }
 
-        function latLonToWorld(lat, lon) {
-            // Converter coordenadas geográficas para o sistema cartesiano
-            const radius = 10; // Ajuste para o tamanho da órbita
-            const x = radius * Math.cos(lon * Math.PI / 180);
-            const z = radius * Math.sin(lat * Math.PI / 180);
-            return new THREE.Vector3(x, 0, z);
-        }
+        function createOrbitLine(userLat, userLon, distance) {
+            const scene = document.querySelector("a-scene");
+            const segments = 36; // Número de cilindros na órbita
 
-        AFRAME.registerComponent('orbit-line', {
-            schema: {
-                originLat: { type: 'number' },
-                originLon: { type: 'number' },
-                distance: { type: 'number' },
-                color: { type: 'string', default: 'white' }
-            },
-            init: function () {
-                const scene = this.el.sceneEl;
-                const segments = 100;
-                const points = [];
+            for (let i = 0; i < segments; i++) {
+                let angle = (i / segments) * 360;
+                let coords = computeOffset(userLat, userLon, distance, angle);
 
-                for (let i = 0; i <= segments; i++) {
-                    let angle = (i / segments) * 360;
-                    let coords = computeOffset(this.data.originLat, this.data.originLon, this.data.distance, angle);
-                    points.push(latLonToWorld(coords.lat, coords.lon));
-                }
+                console.log(`Orbit segment at: lat ${coords.lat}, lon ${coords.lon}`);
 
-                const material = new THREE.LineBasicMaterial({ color: this.data.color });
-                const geometry = new THREE.BufferGeometry().setFromPoints(points);
-                const line = new THREE.Line(geometry, material);
+                const orbitSegment = document.createElement("a-cylinder");
+                orbitSegment.setAttribute("gps-new-entity-place", `latitude: ${coords.lat}; longitude: ${coords.lon}`);
+                orbitSegment.setAttribute("radius", 0.1); // Pequeno para parecer uma linha
+                orbitSegment.setAttribute("height", 0.05); // Fino para parecer uma linha
+                orbitSegment.setAttribute("color", "white");
+                orbitSegment.setAttribute("rotation", "90 0 0"); // Deitado para formar um círculo
+                orbitSegment.setAttribute("scale", "0.5 0.5 0.5");
 
-                this.el.setObject3D('line', line);
+                scene.appendChild(orbitSegment);
             }
-        });
+        }
 
         AFRAME.registerComponent('dynamic-movement', {
             schema: {
