@@ -5,25 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>AR.js A-Frame Solar System</title>
     <script src="https://aframe.io/releases/1.3.0/aframe.min.js"></script>
-    <script type="text/javascript" src="https://raw.githack.com/AR-js-org/AR.js/3.4.5/aframe/build/aframe-ar.js"></script>
-    
+    <script src="https://raw.githack.com/AR-js-org/AR.js/3.4.5/aframe/build/aframe-ar.js"></script>
+
     <script>
-      function createSolarSystem() {
+      function createSolarSystem(userLat, userLon) {
           const scene = document.querySelector("a-scene");
-          
-          // Criar o sistema solar fixo
-          const solarSystem = document.createElement("a-entity");
-          solarSystem.setAttribute("id", "solar-system");
-          scene.appendChild(solarSystem);
 
-          // Criar o sol
+          // Criar o Sol
           const sun = document.createElement("a-sphere");
-          sun.setAttribute("radius", 3);
+          sun.setAttribute("gps-new-entity-place", `latitude: ${userLat}; longitude: ${userLon}`);
+          sun.setAttribute("radius", 2);
           sun.setAttribute("color", "yellow");
-          sun.setAttribute("position", "0 1 -10");
-          solarSystem.appendChild(sun);
+          scene.appendChild(sun);
 
-          // Criar planetas e órbitas
+          // Definir planetas
           const planets = [
               { color: "red", distance: 5, speed: 0.0005 },
               { color: "green", distance: 10, speed: 0.0003 },
@@ -31,48 +26,85 @@
           ];
 
           planets.forEach((data) => {
-              createPlanet(solarSystem, data);
-              createOrbit(solarSystem, data);
+              createOrbitRing(userLat, userLon, data.distance);
+              createPlanet(userLat, userLon, data);
           });
       }
 
-      function createPlanet(solarSystem, data) {
+      function createPlanet(originLat, originLon, data) {
+          const scene = document.querySelector("a-scene");
+          const coords = computeOffset(originLat, originLon, data.distance, 0);
+          
           const planet = document.createElement("a-sphere");
+          planet.setAttribute("gps-new-entity-place", `latitude: ${coords.lat}; longitude: ${coords.lon}`);
           planet.setAttribute("radius", 1);
           planet.setAttribute("color", data.color);
-          planet.setAttribute("position", `${data.distance} 1 -10`);
-          planet.setAttribute("dynamic-movement", `speed: ${data.speed}; distance: ${data.distance}`);
-          solarSystem.appendChild(planet);
+          planet.setAttribute("dynamic-orbit", {
+              speed: data.speed,
+              originLat: originLat,
+              originLon: originLon,
+              distance: data.distance
+          });
+
+          scene.appendChild(planet);
       }
 
-      function createOrbit(solarSystem, data) {
+      function createOrbitRing(originLat, originLon, distance) {
+          const scene = document.querySelector("a-scene");
+          const coords = computeOffset(originLat, originLon, distance, 0);
+
           const orbitRing = document.createElement("a-ring");
-          orbitRing.setAttribute("radius-inner", data.distance - 0.2);
-          orbitRing.setAttribute("radius-outer", data.distance + 0.2);
+          orbitRing.setAttribute("gps-new-entity-place", `latitude: ${coords.lat}; longitude: ${coords.lon}`);
+          orbitRing.setAttribute("radius-inner", distance - 0.5);
+          orbitRing.setAttribute("radius-outer", distance + 0.5);
           orbitRing.setAttribute("color", "white");
           orbitRing.setAttribute("rotation", "-90 0 0");
-          orbitRing.setAttribute("material", "shader: flat; transparent: true; opacity: 0.8; depthTest: true; depthWrite: false;");
-          orbitRing.setAttribute("position", "0 1 -10");
-          solarSystem.appendChild(orbitRing);
+          orbitRing.setAttribute("material", "opacity: 0.5; transparent: true");
+          
+          scene.appendChild(orbitRing);
       }
 
-      AFRAME.registerComponent('dynamic-movement', {
-        schema: {
-          speed: { type: 'number', default: 0.0001 },
-          distance: { type: 'number' }
-        },
-        init() {
-          this.angle = 0;
-        },
-        tick(time, timeDelta) {
-          this.angle += this.data.speed * timeDelta;
-          const x = this.data.distance * Math.cos(this.angle);
-          const z = this.data.distance * Math.sin(this.angle) - 10;
-          this.el.setAttribute('position', `${x} 1 ${z}`);
-        }
+      function computeOffset(lat, lon, distance, angle) {
+          const earthRadius = 6378137;
+          const deltaLat = (distance * Math.cos(angle * Math.PI / 180)) / earthRadius * (180 / Math.PI);
+          const deltaLon = (distance * Math.sin(angle * Math.PI / 180)) / (earthRadius * Math.cos(lat * Math.PI / 180)) * (180 / Math.PI);
+          return { lat: lat + deltaLat, lon: lon + deltaLon };
+      }
+
+      AFRAME.registerComponent('dynamic-orbit', {
+          schema: {
+              speed: { type: 'number', default: 0.0001 },
+              originLat: { type: 'number' },
+              originLon: { type: 'number' },
+              distance: { type: 'number' }
+          },
+          init() {
+              this.angle = 0;
+          },
+          tick(time, timeDelta) {
+              this.angle += this.data.speed * timeDelta;
+              const newCoords = computeOffset(this.data.originLat, this.data.originLon, this.data.distance, this.angle * (180 / Math.PI));
+              this.el.setAttribute('gps-new-entity-place', `latitude: ${newCoords.lat}; longitude: ${newCoords.lon}`);
+          }
       });
-      
-      document.addEventListener("DOMContentLoaded", createSolarSystem);
+
+      function init() {
+          if (navigator.geolocation) {
+              navigator.geolocation.getCurrentPosition(
+                  (position) => {
+                      const userLat = position.coords.latitude;
+                      const userLon = position.coords.longitude;
+                      createSolarSystem(userLat, userLon);
+                  },
+                  (error) => console.error("Erro ao obter localização:", error),
+                  { enableHighAccuracy: true }
+              );
+          } else {
+              console.error("Geolocalização não suportada.");
+          }
+      }
+
+      document.addEventListener("DOMContentLoaded", init);
     </script>
   </head>
   <body>
