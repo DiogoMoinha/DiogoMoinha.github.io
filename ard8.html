@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AR.js A-Frame Solar System</title>
+    <script src="https://aframe.io/releases/1.3.0/aframe.min.js"></script>
+    <script type="text/javascript" src="https://raw.githack.com/AR-js-org/AR.js/3.4.5/three.js/build/ar-threex-location-only.js"></script>
+    <script type="text/javascript" src="https://raw.githack.com/AR-js-org/AR.js/3.4.5/aframe/build/aframe-ar.js"></script>
+
+    <script>
+      function createPlanets(userLat, userLon) {
+          const planets = [
+              { name: "Sun", color: "yellow", distance: 0, radius: 3, speed: 0,
+                description: "O Sol (do latim sol, solis) é a estrela central do Sistema Solar. é responsável por 99,86% da massa do Sistema SolarTodos os outros corpos do Sistema Solar, como planetas, planetas anões, asteroides, cometas e poeira, bem como todos os satélites associados a estes corpos, giram ao seu redor.o Sol possui uma massa 332 900 vezes maior que a da Terra, e um volume 1 300 000 vezes maior que o do nosso planeta."
+               },
+              { name: "Mercury", color: "gray", distance: 5, radius: 0.5, speed: 0.0008,
+                description: "Mercúrio é o menor e mais interno planeta do Sistema Solar, orbitando o Sol a cada 87,969 dias terrestres.A sua órbita tem a maior excentricidade e o seu eixo apresenta a menor inclinação em relação ao plano da órbita dentre todos os planetas do Sistema Solar. Comparado a outros planetas, pouco se sabe a respeito de Mercúrio, pois telescópios em solo terrestre revelam apenas um crescente iluminado com detalhes limitados."
+               },
+              { name: "Venus", color: "yellow", distance: 8, radius: 1, speed: 0.0006,
+                description: "V\u00e9nus \u00e9 o segundo planeta do Sistema Solar em ordem de dist\u00e2ncia a partir do Sol, orbitando-o a cada 224,7 dias.Recebeu seu nome em homenagem \u00e0 deusa romana do amor e da beleza V\u00e9nus, equivalente a Afrodite. Depois da Lua, \u00e9 o objeto mais  brilhante do c\u00e9u noturno, atingindo uma magnitude aparente de -4,6, o suficiente para produzir sombras. Como V\u00e9nus se encontra mais pr\u00f3ximo do Sol do que a Terra, ele pode ser visto aproximadamente na mesma dire\u00e7\u00e3o do Sol."
+               },
+              { name: "Earth", color: "blue", distance: 12, radius: 1.2, speed: 0.0005,
+                description: "O Sol é a estrela central do nosso sistema solar."
+               },
+              { name: "Mars", color: "red", distance: 16, radius: 0.8, speed: 0.0004,
+                description: "O Sol é a estrela central do nosso sistema solar."
+               },
+              { name: "Jupiter", color: "orange", distance: 24, radius: 2, speed: 0.0003,
+                description: "O Sol é a estrela central do nosso sistema solar."
+               },
+              { name: "Saturn", color: "goldenrod", distance: 30, radius: 1.8, speed: 0.0002,
+                description: "O Sol é a estrela central do nosso sistema solar."
+               },
+              { name: "Uranus", color: "lightblue", distance: 38, radius: 1.5, speed: 0.00015,
+                description: "O Sol é a estrela central do nosso sistema solar."
+               },
+              { name: "Neptune", color: "darkblue", distance: 45, radius: 1.4, speed: 0.0001,
+                description: "O Sol é a estrela central do nosso sistema solar."
+               }
+          ];
+
+          const scene = document.querySelector("a-scene");
+
+          planets.forEach((planet) => {
+              const coords = computeOffset(userLat, userLon, planet.distance, 0);
+
+              const sphere = document.createElement("a-sphere");
+              sphere.setAttribute("gps-new-entity-place", { latitude: coords.lat, longitude: coords.lon });
+              sphere.setAttribute("radius", planet.radius);
+              sphere.setAttribute("color", planet.color);
+              sphere.setAttribute("shadow", "");
+              sphere.setAttribute("show-plane", {
+                color: "black",
+                name: planet.name,
+                description: `Este é o planeta ${planet.name}.`, // podes personalizar!
+            });
+
+
+              if (planet.speed > 0) {
+                  sphere.setAttribute("dynamic-movement", { 
+                      type: "spin", 
+                      speed: planet.speed, 
+                      originLat: userLat, 
+                      originLon: userLon, 
+                      distance: planet.distance 
+                  });
+
+                  createOrbitRing(userLat, userLon, planet.distance);
+              }
+
+              entity.appendChild(sphere);
+              scene.appendChild(entity);
+          });
+
+          // Criar o Sol na posição do usuário
+          createSun(userLat, userLon);
+      }
+
+      function computeOffset(lat, lon, distance, angle) {
+          const earthRadius = 6378137;
+          const deltaLat = (distance * Math.cos(angle * Math.PI / 180)) / earthRadius * (180 / Math.PI);
+          const deltaLon = (distance * Math.sin(angle * Math.PI / 180)) / (earthRadius * Math.cos(lat * Math.PI / 180)) * (180 / Math.PI);
+          return { lat: lat + deltaLat, lon: lon + deltaLon };
+      }
+
+      function createOrbitRing(userLat, userLon, distance) {
+            const scene = document.querySelector("a-scene");
+
+            // A órbita é gerada em torno da posição do Sol
+            const coords = computeOffset(userLat, userLon, distance, 0);
+
+            const orbitRing = document.createElement("a-ring");
+            orbitRing.setAttribute("gps-new-entity-place", `latitude: ${userLat}; longitude: ${userLon}`);
+            orbitRing.setAttribute("radius-inner", distance + radius - 0.3); 
+            orbitRing.setAttribute("radius-outer", distance + radius + 0.3); // Ajusta o tamanho do anel para corresponder à distância
+            orbitRing.setAttribute("color", "white");
+            orbitRing.setAttribute("rotation", "-90 0 0"); // Deitado para formar um círculo
+            orbitRing.setAttribute("material", "opacity: 0.5; transparent: true");
+            scene.appendChild(orbitRing);
+        }
+
+        // Criar o Sol
+      function createSun(userLat, userLon) {
+          const scene = document.querySelector("a-scene");
+          const sun = document.createElement("a-sphere");
+          sun.setAttribute("gps-new-entity-place", { latitude: userLat, longitude: userLon });
+          sun.setAttribute("radius", 2);
+          sun.setAttribute("color", "yellow");
+          sun.setAttribute("shadow", "");
+          scene.appendChild(sun);
+      }
+
+        function initPlanets() {
+          if (navigator.geolocation) {
+              navigator.geolocation.getCurrentPosition(
+                  (position) => {
+                      const userLat = position.coords.latitude;
+                      const userLon = position.coords.longitude;
+                      createPlanets(userLat, userLon); // Create spheres around user’s initial position
+                  },
+                  (error) => console.error("Error getting location:", error),
+                  { enableHighAccuracy: true }
+              );
+          } else {
+              console.error("Geolocation is not supported by this browser.");
+          }
+      }
+
+      document.addEventListener("DOMContentLoaded", initPlanets);
+
+      // Component for spinning movement
+      AFRAME.registerComponent('dynamic-movement', {
+        schema: {
+          type: { type: 'string' }, // "spin"
+          speed: { type: 'number', default: 0.0001 }, // Speed of orbit
+          originLat: { type: 'number' }, // User's initial latitude
+          originLon: { type: 'number' }, // User's initial longitude
+          distance: { type: 'number' } // Orbit radius
+        },
+        init() {
+          this.angle = 0;
+        },
+        tick(time, timeDelta) {
+          if (this.data.type === "spin") {
+            this.angle += this.data.speed * timeDelta;
+            const newCoords = computeOffset(this.data.originLat, this.data.originLon, this.data.distance, this.angle * (180 / Math.PI));
+            this.el.setAttribute('gps-new-entity-place', { latitude: newCoords.lat, longitude: newCoords.lon });
+          }
+        }
+      });
+
+      // Component to show a plane on click
+      AFRAME.registerComponent('show-plane', {
+  schema: {
+    color: { type: 'string', default: 'white' },
+    name: { type: 'string', default: 'Planeta' },
+    description: { type: 'string', default: '' }
+  },
+  init() {
+    this.el.addEventListener('click', this.showPlane.bind(this));
+  },
+  showPlane() {
+    const camera = document.querySelector('[gps-new-camera]');
+
+    if (document.querySelector('#infoPlane')) return;
+
+    const plane = document.createElement('a-plane');
+    plane.setAttribute("position", { x: 0, y: 0, z: -2 });
+    plane.setAttribute("width", 2.5);
+    plane.setAttribute("height", 1.5);
+    plane.setAttribute("color", this.data.color);
+    plane.setAttribute("material", { opacity: 0.85, transparent: true });
+    plane.setAttribute("id", "infoPlane");
+    plane.setAttribute("look-at", "[gps-new-camera]");
+
+    // Título
+    const title = document.createElement('a-text');
+    title.setAttribute('value', this.data.name);
+    title.setAttribute('align', 'center');
+    title.setAttribute('color', 'black');
+    title.setAttribute('width', 2.2);
+    title.setAttribute('position', '0 0.4 0.01');
+
+    // Descrição
+    const description = document.createElement('a-text');
+    description.setAttribute('value', this.data.description);
+    description.setAttribute('align', 'center');
+    description.setAttribute('color', 'black');
+    description.setAttribute('width', 2.2);
+    description.setAttribute('position', '0 -0.1 0.01');
+    description.setAttribute('wrap-count', 30);
+
+    plane.appendChild(title);
+    plane.appendChild(description);
+
+    plane.addEventListener("click", () => {
+      camera.removeChild(plane);
+    });
+
+    camera.appendChild(plane);
+  }
+});
+
+
+    </script>
+  </head>
+  <body>
+    <a-scene vr-mode-ui="enabled: false" arjs="sourceType: webcam; videoTexture: true; debugUIEnabled: false">
+      <!-- GPS Camera -->
+      <a-camera gps-new-camera="gpsMinDistance: 5"></a-camera>
+    </a-scene>
+  </body>
+</html>
