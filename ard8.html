@@ -163,45 +163,47 @@
     this.el.addEventListener('click', this.showPlane.bind(this));
   },
   showPlane() {
-    const camera = document.querySelector('[gps-new-camera]');
+  const scene = document.querySelector('a-scene');
 
-    if (document.querySelector('#infoPlane')) return;
+  if (document.querySelector('#infoPlane')) return;
 
-    const plane = document.createElement('a-plane');
-    plane.setAttribute("position", { x: 0, y: 0, z: -2 });
-    plane.setAttribute("width", 2.5);
-    plane.setAttribute("height", 1.5);
-    plane.setAttribute("color", this.data.color);
-    plane.setAttribute("material", { opacity: 0.85, transparent: true });
-    plane.setAttribute("id", "infoPlane");
-    plane.setAttribute("look-at", "[gps-new-camera]");
+  const camera = document.querySelector('[gps-new-camera]');
 
-    // Título
-    const title = document.createElement('a-text');
-    title.setAttribute('value', this.data.name);
-    title.setAttribute('align', 'center');
-    title.setAttribute('color', 'black');
-    title.setAttribute('width', 2.2);
-    title.setAttribute('position', '0 0.4 0.01');
+  const plane = document.createElement('a-plane');
+  plane.setAttribute("position", "0 1.5 -3");
+  plane.setAttribute("width", 2.5);
+  plane.setAttribute("height", 1.5);
+  plane.setAttribute("color", this.data.color);
+  plane.setAttribute("material", { opacity: 0.85, transparent: true });
+  plane.setAttribute("id", "infoPlane");
+  plane.setAttribute("look-at", "[gps-new-camera]");
 
-    // Descrição
-    const description = document.createElement('a-text');
-    description.setAttribute('value', this.data.description);
-    description.setAttribute('align', 'center');
-    description.setAttribute('color', 'black');
-    description.setAttribute('width', 2.2);
-    description.setAttribute('position', '0 -0.1 0.01');
-    description.setAttribute('wrap-count', 30);
+  // Título
+  const title = document.createElement('a-text');
+  title.setAttribute('value', this.data.name);
+  title.setAttribute('align', 'center');
+  title.setAttribute('color', 'black');
+  title.setAttribute('width', 2.2);
+  title.setAttribute('position', '0 0.4 0.01');
 
-    plane.appendChild(title);
-    plane.appendChild(description);
+  // Descrição
+  const description = document.createElement('a-text');
+  description.setAttribute('value', this.data.description);
+  description.setAttribute('align', 'center');
+  description.setAttribute('color', 'black');
+  description.setAttribute('width', 2.2);
+  description.setAttribute('position', '0 -0.1 0.01');
+  description.setAttribute('wrap-count', 30);
 
-    plane.addEventListener("click", () => {
-      camera.removeChild(plane);
-    });
+  plane.appendChild(title);
+  plane.appendChild(description);
 
-    camera.appendChild(plane);
-  }
+  plane.addEventListener("click", () => {
+    scene.removeChild(plane);
+  });
+
+  scene.appendChild(plane);
+}
 });
 
 
