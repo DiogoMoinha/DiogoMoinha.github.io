@@ -210,9 +210,13 @@
     </script>
   </head>
   <body>
-    <a-scene vr-mode-ui="enabled: false" arjs="sourceType: webcam; videoTexture: true; debugUIEnabled: false">
+    <a-scene 
+      vr-mode-ui="enabled: false" 
+      arjs="sourceType: webcam; videoTexture: true; debugUIEnabled: false"
+    >
       <!-- GPS Camera -->
-      <a-camera gps-new-camera="gpsMinDistance: 5"></a-camera>
+      <a-camera gps-new-camera="gpsMinDistance: 5" rotation-reader></a-camera>
     </a-scene>
   </body>
+  
 </html>
