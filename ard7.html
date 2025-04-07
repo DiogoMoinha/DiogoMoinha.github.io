@@ -71,7 +71,7 @@
             const coords = computeOffset(userLat, userLon, distance, 0);
 
             const orbitRing = document.createElement("a-ring");
-            orbitRing.setAttribute("gps-new-entity-place", { latitude: coords.lat, longitude: coords.lon});
+            orbitRing.setAttribute("gps-new-entity-place", { latitude: userLat, longitude: userLon});
             orbitRing.setAttribute("radius-inner", distance); 
             orbitRing.setAttribute("radius-outer", distance); // Ajusta o tamanho do anel para corresponder à distância
             orbitRing.setAttribute("color", "white");
