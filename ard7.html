@@ -58,22 +58,37 @@
       }
 
       function computeOffset(lat, lon, distance, angle) {
-          const earthRadius = 6378137;
-          const deltaLat = (distance * Math.cos(angle * Math.PI / 180)) / earthRadius * (180 / Math.PI);
-          const deltaLon = (distance * Math.sin(angle * Math.PI / 180)) / (earthRadius * Math.cos(lat * Math.PI / 180)) * (180 / Math.PI);
-          return { lat: lat + deltaLat, lon: lon + deltaLon };
-      }
+    const earthRadius = 6378137;
+ 
+    // Verificação de ângulo
+    angle = angle % 360;
+ 
+    const deltaLat = (distance * Math.cos(angle * Math.PI / 180)) / earthRadius * (180 / Math.PI);
+    const deltaLon = (distance * Math.sin(angle * Math.PI / 180)) / (earthRadius * Math.cos(lat * Math.PI / 180)) * (180 / Math.PI);
+ 
+    let newLat = lat + deltaLat;
+    let newLon = lon + deltaLon;
+ 
+    // Correção de latitude
+    if (newLat > 90) newLat = 90;
+    if (newLat < -90) newLat = -90;
+ 
+    // Correção de longitude
+    if (newLon > 180) newLon = newLon - 360;
+    if (newLon < -180) newLon = newLon + 360;
+ 
+    return { lat: newLat, lon: newLon };
+}
+ 
+ 
 
       function createOrbitRing(userLat, userLon, distance) {
             const scene = document.querySelector("a-scene");
 
-            // A órbita é gerada em torno da posição do Sol
-            const coords = computeOffset(userLat, userLon, distance, 0);
-
             const orbitRing = document.createElement("a-ring");
-            orbitRing.setAttribute("gps-new-entity-place", { latitude: userLat, longitude: userLon});
-            orbitRing.setAttribute("radius-inner", distance+1.0); 
-            orbitRing.setAttribute("radius-outer", distance+1.6); // Ajusta o tamanho do anel para corresponder à distância
+            orbitRing.setAttribute("gps-new-entity-place", { latitude: coords.lat, longitude: coords.lon});
+            orbitRing.setAttribute("radius-inner", distance - 0.3); 
+            orbitRing.setAttribute("radius-outer", distance + 0.3); // Ajusta o tamanho do anel para corresponder à distância
             orbitRing.setAttribute("color", "white");
             orbitRing.setAttribute("rotation", "-90 0 0"); // Deitado para formar um círculo
             orbitRing.setAttribute("material", "opacity: 0.5; transparent: true");
