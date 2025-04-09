@@ -46,7 +46,7 @@
                       distance: planet.distance 
                   });
 
-                  createOrbitRing(userLat, userLon, planet.distance);
+                  createOrbitRing(coords.lat , coords.lon , planet.distance);
               }
 
               entity.appendChild(sphere);
@@ -82,13 +82,12 @@
  
  
 
-      function createOrbitRing(userLat, userLon, distance) {
+      function createOrbitRing(Lat, Lon, distance) {
             const scene = document.querySelector("a-scene");
 
-            const coords = computeOffset(userLat, userLon, distance, 0);
 
             const orbitRing = document.createElement("a-ring");
-            orbitRing.setAttribute("gps-new-entity-place", { latitude: coords.lat, longitude: coords.lon});
+            orbitRing.setAttribute("gps-new-entity-place", { latitude: Lat, longitude: Lon});
             orbitRing.setAttribute("radius-inner", distance - 0.3); 
             orbitRing.setAttribute("radius-outer", distance + 0.3); // Ajusta o tamanho do anel para corresponder à distância
             orbitRing.setAttribute("color", "white");
