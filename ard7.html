@@ -76,15 +76,14 @@
  
     return { lat: newLat, lon: newLon };
 }
- 
- 
 
-      function createOrbitRing(Lat, Lon, distance) {
+      function createOrbitRing(userLat, userLon, distance) {
             const scene = document.querySelector("a-scene");
 
+            const coords = computeOffset(userLat, userLon, distance, 0);
 
             const orbitRing = document.createElement("a-ring");
-            orbitRing.setAttribute("gps-new-entity-place", { latitude: Lat, longitude: Lon});
+            orbitRing.setAttribute("gps-new-entity-place", { latitude: coords.lat, longitude: coords.lon});
             orbitRing.setAttribute("radius-inner", distance - 0.3); 
             orbitRing.setAttribute("radius-outer", distance + 0.3); // Ajusta o tamanho do anel para corresponder à distância
             orbitRing.setAttribute("color", "white");
