@@ -85,6 +85,8 @@
       function createOrbitRing(userLat, userLon, distance) {
             const scene = document.querySelector("a-scene");
 
+            const coords = computeOffset(userLat, userLon, planet.distance, 0);
+
             const orbitRing = document.createElement("a-ring");
             orbitRing.setAttribute("gps-new-entity-place", { latitude: coords.lat, longitude: coords.lon});
             orbitRing.setAttribute("radius-inner", distance - 0.3); 
