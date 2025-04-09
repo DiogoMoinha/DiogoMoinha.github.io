@@ -97,17 +97,6 @@
             scene.appendChild(orbitRing);
         }
 
-        // Criar o Sol
-      function createSun(userLat, userLon) {
-          const scene = document.querySelector("a-scene");
-          const sun = document.createElement("a-sphere");
-          sun.setAttribute("gps-new-entity-place", { latitude: userLat, longitude: userLon });
-          sun.setAttribute("radius", 2);
-          sun.setAttribute("color", "yellow");
-          sun.setAttribute("shadow", "");
-          scene.appendChild(sun);
-      }
-
         function initPlanets() {
           if (navigator.geolocation) {
               navigator.geolocation.getCurrentPosition(
