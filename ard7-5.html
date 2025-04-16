@@ -45,15 +45,15 @@
                       distance: planet.distance 
                   });
 
+                  const angle = Math.random() * 360;
                   createOrbitRing(userLat, userLon, planet.distance);
+                  const coords = computeOffset(userLat, userLon, planet.distance, angle);
               }
 
               entity.appendChild(sphere);
               scene.appendChild(entity);
           });
 
-          // Criar o Sol na posição do usuário
-          createSun(userLat, userLon);
       }
 
       function computeOffset(lat, lon, distance, angle) {
