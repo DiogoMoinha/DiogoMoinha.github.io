@@ -87,23 +87,12 @@
               latitude: userLat,
               longitude: userLon
           });
-          orbitRing.setAttribute("radius-inner", distance - 0.3);
-          orbitRing.setAttribute("radius-outer", distance + 0.3);
+          orbitRing.setAttribute("radius-inner", distance);
+          orbitRing.setAttribute("radius-outer", distance + 1);
           orbitRing.setAttribute("color", "white");
           orbitRing.setAttribute("rotation", "-90 0 0");
           orbitRing.setAttribute("material", "opacity: 0.5; transparent: true");
           scene.appendChild(orbitRing);
-      }
-
-      // Criar o Sol
-      function createSun(userLat, userLon) {
-          const scene = document.querySelector("a-scene");
-          const sun = document.createElement("a-sphere");
-          sun.setAttribute("gps-new-entity-place", { latitude: userLat, longitude: userLon });
-          sun.setAttribute("radius", 2);
-          sun.setAttribute("color", "yellow");
-          sun.setAttribute("shadow", "");
-          scene.appendChild(sun);
       }
 
       function initPlanets() {
