@@ -170,8 +170,8 @@
   const camera = document.querySelector('[gps-new-camera]');
 
   const plane = document.createElement('a-plane');
-  plane.setAttribute("position", "0 1.5 -3");
-  plane.setAttribute("width", 2.5);
+  plane.setAttribute("position", { x: 0, y: 0, z: -2 });
+  plane.setAttribute("width", 2);
   plane.setAttribute("height", 1.5);
   plane.setAttribute("color", this.data.color);
   plane.setAttribute("material", { opacity: 0.85, transparent: true });
