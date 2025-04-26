@@ -54,7 +54,7 @@
               sphere.setAttribute("show-plane", {
                 color: "black",
                 name: planet.name,
-                description: `Este é o planeta ${planet.name}.`, // podes personalizar!
+                description:  '${planet.description},' // podes personalizar!
             });
 
 
@@ -199,10 +199,10 @@
   plane.appendChild(description);
 
   plane.addEventListener("click", () => {
-    scene.removeChild(plane);
+    camera.removeChild(plane);
   });
 
-  scene.appendChild(plane);
+  camera.appendChild(plane);
 }
 });
 
