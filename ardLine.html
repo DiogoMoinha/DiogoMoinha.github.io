@@ -47,7 +47,7 @@
                       distance: planet.distance 
                   });
 
-                  createOrbitLine(userLat, userLon, planet.distance);
+                  createOrbitDots(userLat, userLon, planet.distance);
               }
 
               entity.appendChild(sphere);
@@ -83,27 +83,26 @@
  
  
 
-function createOrbitLine(userLat, userLon, distance, color = "white") {
-    const points = [];
-    const segments = 64; // Número de pontos para suavidade da curva
+function createOrbitDots(userLat, userLon, distance, numDots = 36) {
+  const scene = document.querySelector("a-scene");
 
-    for (let i = 0; i <= segments; i++) {
-        let angle = (i / segments) * 360;
-        let coords = computeOffset(userLat, userLon, distance, angle);
-        points.push(`${coords.lat} ${coords.lon} 0`); // Mantemos Z fixo para AR.js
-    }
+  for (let i = 0; i < numDots; i++) {
+    const angle = (360 / numDots) * i;
+    const coords = computeOffset(userLat, userLon, distance, angle);
 
-    const scene = document.querySelector("a-scene");
-
-    const orbit = document.createElement("a-entity");
-    orbit.setAttribute("line", {
-        start: points[0],
-        end: points[points.length - 1],
-        color: color
+    const dot = document.createElement("a-sphere");
+    dot.setAttribute("gps-new-entity-place", {
+      latitude: coords.lat,
+      longitude: coords.lon
     });
+    dot.setAttribute("radius", 0.2); // Tamanho do ponto
+    dot.setAttribute("color", "white");
+    dot.setAttribute("material", "opacity: 0.4; transparent: true");
 
-    scene.appendChild(orbit);
+    scene.appendChild(dot);
+  }
 }
+
 
 
 
