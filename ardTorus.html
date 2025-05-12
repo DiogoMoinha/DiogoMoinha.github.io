@@ -80,25 +80,30 @@
           return { lat: newLat, lon: newLon };
       }
 
-function createOrbitRing(userLat, userLon, distance) {
+function createOrbitRing(userLat, userLon, distanceMeters) {
     const scene = document.querySelector("a-scene");
 
     const orbitTorus = document.createElement("a-entity");
+
+    // Colocar o torus no centro (lat, lon do utilizador)
     orbitTorus.setAttribute("gps-new-entity-place", {
         latitude: userLat,
         longitude: userLon
     });
 
+    // A escala do torus é arbitrária — afeta o "encaixe visual"
+    // Ajusta estes valores conforme necessário
     orbitTorus.setAttribute("geometry", {
         primitive: "torus",
-        radius: distance + 1.5,        // Valor médio entre inner e outer
-        radiusTubular: 0.1,            // Espessura do anel
-        segmentsRadial: 36,
-        segmentsTubular: 12
+        radius: distanceMeters / 2,      // aproximação visual
+        radiusTubular: 0.5,
+        segmentsRadial: 64,
+        segmentsTubular: 16
     });
 
-    orbitTorus.setAttribute("material", "color: white; opacity: 0.5; transparent: true");
+    orbitTorus.setAttribute("material", "color: white; opacity: 0.4; transparent: true");
     orbitTorus.setAttribute("rotation", "-90 0 0");
+
     scene.appendChild(orbitTorus);
 }
 
