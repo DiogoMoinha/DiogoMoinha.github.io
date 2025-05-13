@@ -95,8 +95,8 @@ function createOrbitRing(userLat, userLon, distanceMeters) {
     // Ajusta estes valores conforme necessário
     orbitTorus.setAttribute("geometry", {
         primitive: "torus",
-        radius: distanceMeters / 2,      // aproximação visual
-        radiusTubular: 0.5,
+        radius: distanceMeters,      // aproximação visual
+        radiusTubular: 0.2,
         segmentsRadial: 64,
         segmentsTubular: 16
     });
