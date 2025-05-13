@@ -1,0 +1,153 @@
+<script>
+  function createPlanets(userLat, userLon) {
+      const planets = [
+          { name: "Sun", color: "yellow", distance: 0, radius: 3, speed: 0 },
+          { name: "Mercury", color: "gray", distance: 5, radius: 0.5, speed: 0.0008, initialAngle: 0 },
+          { name: "Venus", color: "yellow", distance: 8, radius: 1, speed: 0.0006, initialAngle: 45 },
+          { name: "Earth", color: "blue", distance: 12, radius: 1.2, speed: 0.0005, initialAngle: 90 },
+          { name: "Mars", color: "red", distance: 16, radius: 0.8, speed: 0.0004, initialAngle: 135 },
+          { name: "Jupiter", color: "orange", distance: 24, radius: 2, speed: 0.0003, initialAngle: 180 },
+          { name: "Saturn", color: "goldenrod", distance: 30, radius: 1.8, speed: 0.0002, initialAngle: 225 },
+          { name: "Uranus", color: "lightblue", distance: 38, radius: 1.5, speed: 0.00015, initialAngle: 270 },
+          { name: "Neptune", color: "darkblue", distance: 45, radius: 1.4, speed: 0.0001, initialAngle: 315 }
+      ];
+
+      const scene = document.querySelector("a-scene");
+
+      planets.forEach((planet) => {
+          const coords = computeOffset(userLat, userLon, planet.distance, planet.initialAngle);
+
+          const entity = document.createElement("a-entity");
+          entity.setAttribute("cursor", "rayOrigin:mouse");
+
+          const sphere = document.createElement("a-sphere");
+          sphere.setAttribute("gps-new-entity-place", { latitude: coords.lat, longitude: coords.lon });
+          sphere.setAttribute("radius", planet.radius);
+          sphere.setAttribute("color", planet.color);
+          sphere.setAttribute("shadow", "");
+          sphere.setAttribute("show-plane", { color: planet.color });
+
+          if (planet.speed > 0) {
+              sphere.setAttribute("dynamic-movement", {
+                  type: "spin",
+                  speed: planet.speed,
+                  originLat: userLat,
+                  originLon: userLon,
+                  distance: planet.distance
+              });
+
+              createOrbitWithCircles(userLat, userLon, planet.distance);
+          }
+
+          entity.appendChild(sphere);
+          scene.appendChild(entity);
+      });
+  }
+
+  function computeOffset(lat, lon, distance, angle) {
+      const earthRadius = 6378137;
+
+      angle = angle % 360;
+
+      const deltaLat = (distance * Math.cos(angle * Math.PI / 180)) / earthRadius * (180 / Math.PI);
+      const deltaLon = (distance * Math.sin(angle * Math.PI / 180)) / (earthRadius * Math.cos(lat * Math.PI / 180)) * (180 / Math.PI);
+
+      let newLat = lat + deltaLat;
+      let newLon = lon + deltaLon;
+
+      if (newLat > 90) newLat = 90;
+      if (newLat < -90) newLat = -90;
+
+      if (newLon > 180) newLon = newLon - 360;
+      if (newLon < -180) newLon = newLon + 360;
+
+      return { lat: newLat, lon: newLon };
+  }
+
+  function createOrbitWithCircles(userLat, userLon, distance) {
+      const scene = document.querySelector("a-scene");
+
+      for (let angle = 0; angle < 360; angle += 10) {
+          const { lat, lon } = computeOffset(userLat, userLon, distance, angle);
+
+          const circle = document.createElement("a-circle");
+          circle.setAttribute("gps-new-entity-place", {
+              latitude: lat,
+              longitude: lon
+          });
+          circle.setAttribute("radius", 0.2);
+          circle.setAttribute("rotation", "-90 0 0");
+          circle.setAttribute("color", "white");
+          circle.setAttribute("material", "opacity: 0.3; transparent: true");
+
+          scene.appendChild(circle);
+      }
+  }
+
+  function initPlanets() {
+      if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(
+              (position) => {
+                  const userLat = position.coords.latitude;
+                  const userLon = position.coords.longitude;
+                  createPlanets(userLat, userLon);
+              },
+              (error) => console.error("Error getting location:", error),
+              { enableHighAccuracy: true }
+          );
+      } else {
+          console.error("Geolocation is not supported by this browser.");
+      }
+  }
+
+  document.addEventListener("DOMContentLoaded", initPlanets);
+
+  AFRAME.registerComponent('dynamic-movement', {
+      schema: {
+          type: { type: 'string' },
+          speed: { type: 'number', default: 0.0001 },
+          originLat: { type: 'number' },
+          originLon: { type: 'number' },
+          distance: { type: 'number' }
+      },
+      init() {
+          this.angle = 0;
+      },
+      tick(time, timeDelta) {
+          if (this.data.type === "spin") {
+              this.angle += this.data.speed * timeDelta;
+              const newCoords = computeOffset(this.data.originLat, this.data.originLon, this.data.distance, this.angle * (180 / Math.PI));
+              this.el.setAttribute('gps-new-entity-place', { latitude: newCoords.lat, longitude: newCoords.lon });
+          }
+      }
+  });
+
+  AFRAME.registerComponent('show-plane', {
+      schema: {
+          color: { type: 'string', default: 'white' }
+      },
+      init() {
+          this.el.addEventListener('click', this.showPlane.bind(this));
+      },
+      showPlane() {
+          const camera = document.querySelector('[gps-new-camera]');
+
+          if (document.querySelector('#infoPlane')) return;
+
+          const plane = document.createElement('a-plane');
+          plane.setAttribute("position", { x: 0, y: 0, z: -2 });
+          plane.setAttribute("width", 2);
+          plane.setAttribute("height", 1);
+          plane.setAttribute("color", this.data.color);
+          plane.setAttribute("material", { opacity: 0.8, transparent: true });
+          plane.setAttribute("id", "infoPlane");
+          plane.setAttribute("look-at", "[gps-new-camera]");
+
+          plane.addEventListener("click", () => {
+              camera.removeChild(plane);
+          });
+
+          camera.appendChild(plane);
+      }
+  });
+</script>
