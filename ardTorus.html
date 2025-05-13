@@ -87,15 +87,15 @@ function createOrbitRing(userLat, userLon, distanceMeters) {
 
     // Colocar o torus no centro (lat, lon do utilizador)
     orbitTorus.setAttribute("gps-new-entity-place", {
-        latitude: userLat,
-        longitude: userLon
+        latitude: userLat + 2,
+        longitude: userLon +  2
     });
 
     // A escala do torus é arbitrária — afeta o "encaixe visual"
     // Ajusta estes valores conforme necessário
     orbitTorus.setAttribute("geometry", {
         primitive: "torus",
-        radius: distanceMeters,      // aproximação visual
+        radius: distanceMeters * 3,      // aproximação visual
         radiusTubular: 0.2,
         segmentsRadial: 64,
         segmentsTubular: 16
