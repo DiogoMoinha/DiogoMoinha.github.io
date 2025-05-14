@@ -47,7 +47,7 @@
                   });
 
                   const angle = Math.random() * 360;
-                  createOrbitRing(userLat, userLon, planet.distance);
+                  createOrbitWithCylinders(userLat, userLon, planet.distance);
                   const coords = computeOffset(userLat, userLon, planet.distance, angle);
               }
 
@@ -80,20 +80,27 @@
           return { lat: newLat, lon: newLon };
       }
 
-      function createOrbitRing(userLat, userLon, distance) {
-          const scene = document.querySelector("a-scene");
+      function createOrbitWithCylinders(userLat, userLon, distance) {
+    const scene = document.querySelector("a-scene");
 
-          const dot = document.createElement("a-cylinder");
-          dot.setAttribute("gps-new-entity-place", {
-            latitude: userLat,
-            longitude: userLon
-          });
-          dot.setAttribute("height", 0.4);
-          dot.setAttribute("radius", 0.05);
-          dot.setAttribute("color", "white");
-          dot.setAttribute("material", "opacity: 0.4; transparent: true");
-          dot.setAttribute("rotation", "90 0 0");    
-      }
+    for (let angle = 0; angle < 360; angle += 10) {
+        const { lat, lon } = computeOffset(userLat, userLon, distance, angle);
+
+        const cylinder = document.createElement("a-cylinder");
+        cylinder.setAttribute("gps-new-entity-place", {
+            latitude: lat,
+            longitude: lon
+        });
+        cylinder.setAttribute("height", 0.2);         // Altura vertical
+        cylinder.setAttribute("radius", 0.1);         // Espessura
+        cylinder.setAttribute("color", "white");
+        cylinder.setAttribute("rotation", "-90 0 0");   // Mantém de pé
+        cylinder.setAttribute("material", "opacity: 0.4; transparent: true");
+
+        scene.appendChild(cylinder);
+    }
+}
+
 
       function initPlanets() {
           if (navigator.geolocation) {
