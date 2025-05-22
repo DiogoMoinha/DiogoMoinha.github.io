@@ -158,8 +158,10 @@
     //plane.appendChild(text);
 
     const text = document.createElement('h1');
-    text.innerText(`Este e o planeta: ${this.data.name}`);
+    text.innerHTML(`Este e o planeta: ${this.data.name}`);
     plane.appendChild(text);
+
+    
 
     plane.addEventListener("click", () => {
       camera.removeChild(plane);
