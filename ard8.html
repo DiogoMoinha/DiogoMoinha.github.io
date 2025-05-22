@@ -149,12 +149,16 @@
     plane.setAttribute("look-at", "[gps-new-camera]");
 
     // Texto descritivo
-    const text = document.createElement('a-text');
-    text.setAttribute("value", `Este e o planeta: ${this.data.name}`);
-    text.setAttribute("align", "center");
-    text.setAttribute("color", "white");
-    text.setAttribute("position", "0 0 0.01");
-    text.setAttribute("width", 2.2);
+    //const text = document.createElement('a-text');
+    //text.setAttribute("value", `Este e o planeta: ${this.data.name}`);
+    //text.setAttribute("align", "center");
+    //text.setAttribute("color", "white");
+    //text.setAttribute("position", "0 0 0.01");
+    //text.setAttribute("width", 2.2);
+    //plane.appendChild(text);
+
+    const text = document.createElement('h1');
+    text.innerText(`Este e o planeta: ${this.data.name}`);
     plane.appendChild(text);
 
     plane.addEventListener("click", () => {
