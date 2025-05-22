@@ -137,7 +137,7 @@
           plane.setAttribute("id", "infoPlane");
           plane.setAttribute("look-at", "[gps-new-camera]");
 
-          const desc = planetDescriptions[this.data.name] || "Sem descrição disponível.";
+          const desc = planetDescriptions[this.data.name];
           const text = document.createElement('a-text');
           text.setAttribute("value", desc);
           text.setAttribute("align", "center");
@@ -149,6 +149,7 @@
           plane.addEventListener("click", () => {
             camera.removeChild(plane);
           });
+
           camera.appendChild(plane);
         });
       }
