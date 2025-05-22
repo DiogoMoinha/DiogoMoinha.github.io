@@ -122,38 +122,47 @@
     });
 
     AFRAME.registerComponent('show-plane', {
-      schema: { name: { type: 'string' } },
-      init() {
-        this.el.addEventListener('click', () => {
-          const camera = document.querySelector('[gps-new-camera]');
-          if (document.querySelector('#infoPlane')) return;
-
-          const plane = document.createElement('a-plane');
-          plane.setAttribute("position", "0 0 -2");
-          plane.setAttribute("width", 2.5);
-          plane.setAttribute("height", 1.5);
-          plane.setAttribute("color", "black");
-          plane.setAttribute("material", "opacity: 0.85; transparent: true");
-          plane.setAttribute("id", "infoPlane");
-          plane.setAttribute("look-at", "[gps-new-camera]");
-
-          const desc = planetDescriptions[this.data.name];
-          const text = document.createElement('a-text');
-          text.setAttribute("value", desc);
-          text.setAttribute("align", "center");
-          text.setAttribute("color", "white");
-          text.setAttribute("position", "0 0 0.01");
-          text.setAttribute("width", 2.2);
-          plane.appendChild(text);
-
-          plane.addEventListener("click", () => {
-            camera.removeChild(plane);
-          });
-
-          camera.appendChild(plane);
-        });
+  schema: { name: { type: 'string' } },
+  init() {
+    this.el.addEventListener('click', () => {
+      const camera = document.querySelector('[gps-new-camera]');
+      const existingPlane = document.querySelector('#infoPlane');
+      if (existingPlane) {
+        existingPlane.remove();
+        return;
       }
+
+      const desc = planetDescriptions[this.data.name] || "Sem descrição disponível.";
+      const plane = document.createElement('a-plane');
+      plane.setAttribute("position", "0 0 -2.5");
+      plane.setAttribute("width", 2.5);
+      plane.setAttribute("height", 1.5);
+      plane.setAttribute("color", "black");
+      plane.setAttribute("material", "opacity: 0.85; transparent: true");
+      plane.setAttribute("id", "infoPlane");
+      plane.setAttribute("look-at", "[gps-new-camera]");
+      plane.setAttribute("cursor-listener", "");
+
+      const text = document.createElement('a-text');
+      text.setAttribute("value", desc);
+      text.setAttribute("align", "center");
+      text.setAttribute("color", "white");
+      text.setAttribute("position", "0 0 0.01");
+      text.setAttribute("width", 2.2);
+      plane.appendChild(text);
+
+      camera.appendChild(plane);
     });
+  }
+});
+
+AFRAME.registerComponent('cursor-listener', {
+  init: function () {
+    this.el.addEventListener('click', () => {
+      this.el.remove(); // Fecha o painel
+    });
+  }
+});
 
     document.addEventListener("DOMContentLoaded", initPlanets);
   </script>
