@@ -25,7 +25,7 @@
 
     async function initPlanets() {
       try {
-        const response = await fetch('DummyApp2.php');
+        const response = await fetch('system2.json');
         const data = await response.json();
         data.forEach(p => {
           planetDescriptions[p.name] = p.description;
@@ -121,40 +121,45 @@
       }
     });
 
-    AFRAME.registerComponent('show-plane', {
+   AFRAME.registerComponent('show-plane', {
   schema: { name: { type: 'string' } },
   init() {
     this.el.addEventListener('click', () => {
-      const camera = document.querySelector('[gps-new-camera]');
-      const existingPlane = document.querySelector('#infoPlane');
-      if (existingPlane) {
-        existingPlane.remove();
-        return;
-      }
-
       const desc = planetDescriptions[this.data.name] || "Sem descrição disponível.";
-      const plane = document.createElement('a-plane');
-      plane.setAttribute("position", "0 0 -2.5");
-      plane.setAttribute("width", 2.5);
-      plane.setAttribute("height", 1.5);
-      plane.setAttribute("color", "black");
-      plane.setAttribute("material", "opacity: 0.85; transparent: true");
-      plane.setAttribute("id", "infoPlane");
-      plane.setAttribute("look-at", "[gps-new-camera]");
-      plane.setAttribute("cursor-listener", "");
-
-      const text = document.createElement('a-text');
-      text.setAttribute("value", desc);
-      text.setAttribute("align", "center");
-      text.setAttribute("color", "white");
-      text.setAttribute("position", "0 0 0.01");
-      text.setAttribute("width", 2.2);
-      plane.appendChild(text);
-
-      camera.appendChild(plane);
+      const panel = document.getElementById('info-panel');
+      const text = document.getElementById('info-text');
+      text.textContent = desc;
+      panel.style.display = 'block';
     });
   }
 });
+
+
+<!-- Painel HTML flutuante -->
+<div id="info-panel" style="
+  display: none;
+  position: absolute;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.85);
+  color: white;
+  padding: 15px;
+  border-radius: 10px;
+  max-width: 90%;
+  font-family: sans-serif;
+  z-index: 999;">
+  <span id="info-text"></span>
+  <button onclick="document.getElementById('info-panel').style.display='none'" style="
+    margin-left: 10px;
+    background: red;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+    border-radius: 5px;">Fechar</button>
+</div>
+
 
 AFRAME.registerComponent('cursor-listener', {
   init: function () {
@@ -169,7 +174,7 @@ AFRAME.registerComponent('cursor-listener', {
 </head>
 <body>
   <a-scene vr-mode-ui="enabled: false" arjs="sourceType: webcam; videoTexture: true; debugUIEnabled: false">
-    <a-camera gps-new-camera="gpsMinDistance: 5"></a-camera>
+    <a-camera gps-new-camera></a-camera>
   </a-scene>
 </body>
 </html>
