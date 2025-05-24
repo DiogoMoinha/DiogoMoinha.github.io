@@ -25,21 +25,12 @@
 
     async function initPlanets() {
       try {
-        const data = [
-  { name: "Mercury", description: "Mercúrio é o planeta mais próximo do Sol." },
-  { name: "Venus", description: "Vénus é o segundo planeta." },
-  { name: "Earth", description: "A Terra é o nosso planeta." },
-  { name: "Mars", description: "Marte é conhecido como o planeta vermelho." },
-  { name: "Jupiter", description: "Júpiter é o maior planeta." },
-  { name: "Saturn", description: "Saturno tem anéis impressionantes." },
-  { name: "Uranus", description: "Urano gira de lado." },
-  { name: "Neptune", description: "Neptuno é azul escuro." },
-  { name: "Sun", description: "O Sol é a estrela central do nosso sistema solar." }
-];
+       const response = await fetch('system2.json');
+const data = await response.json();
+data.forEach(p => {
+  planetDescriptions[p.name] = p.description;
+});
 
-        data.forEach(p => {
-          planetDescriptions[p.name] = p.description;
-        });
       } catch (error) {
         console.error("Erro ao carregar descrições:", error);
       }
