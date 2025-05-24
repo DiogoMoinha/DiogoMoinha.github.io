@@ -25,8 +25,18 @@
 
     async function initPlanets() {
       try {
-        const response = await fetch('system2.json');
-        const data = await response.json();
+        const data = [
+  { name: "Mercury", description: "Mercúrio é o planeta mais próximo do Sol." },
+  { name: "Venus", description: "Vénus é o segundo planeta." },
+  { name: "Earth", description: "A Terra é o nosso planeta." },
+  { name: "Mars", description: "Marte é conhecido como o planeta vermelho." },
+  { name: "Jupiter", description: "Júpiter é o maior planeta." },
+  { name: "Saturn", description: "Saturno tem anéis impressionantes." },
+  { name: "Uranus", description: "Urano gira de lado." },
+  { name: "Neptune", description: "Neptuno é azul escuro." },
+  { name: "Sun", description: "O Sol é a estrela central do nosso sistema solar." }
+];
+
         data.forEach(p => {
           planetDescriptions[p.name] = p.description;
         });
@@ -142,29 +152,30 @@
     <a-camera gps-new-camera></a-camera>
   </a-scene>
 
-  <!-- PAINEL HTML DE DESCRIÇÃO -->
   <div id="info-panel" style="
-    display: none;
-    position: absolute;
-    bottom: 10px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: rgba(0, 0, 0, 0.85);
+  display: none;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(0, 0, 0, 0.85);
+  color: white;
+  padding: 20px;
+  border-radius: 10px;
+  max-width: 80%;
+  text-align: center;
+  font-family: sans-serif;
+  z-index: 999;">
+  <span id="info-text"></span><br><br>
+  <button onclick="document.getElementById('info-panel').style.display='none'" style="
+    background: red;
     color: white;
-    padding: 15px;
-    border-radius: 10px;
-    max-width: 90%;
-    font-family: sans-serif;
-    z-index: 999;">
-    <span id="info-text"></span>
-    <button onclick="document.getElementById('info-panel').style.display='none'" style="
-      margin-left: 10px;
-      background: red;
-      color: white;
-      border: none;
-      padding: 5px 10px;
-      cursor: pointer;
-      border-radius: 5px;">Fechar</button>
-  </div>
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 1em;">Fechar</button>
+</div>
+
 </body>
 </html>
