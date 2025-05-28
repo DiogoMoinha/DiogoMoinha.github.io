@@ -78,7 +78,7 @@
     const scene = document.querySelector("a-scene");
 
     // Se orbitSegments não for definido, calcula automaticamente
-    const segments = orbitSegments || Math.round(20 + distance * 1.5); // Ex: 5 → 27, 45 → 88
+    const segments = orbitSegments || Math.round(30 + distance * 1.5); // Ex: 5 → 27, 45 → 88
 
     for (let i = 0; i < segments; i++) {
         const angle = (360 / segments) * i;
@@ -89,7 +89,7 @@
             latitude: lat,
             longitude: lon
         });
-        circle.setAttribute("radius", 0.2);
+        circle.setAttribute("radius", 0.1);
         circle.setAttribute("rotation", "-90 0 0");
         circle.setAttribute("color", "white");
         circle.setAttribute("material", "opacity: 0.3; transparent: true");
