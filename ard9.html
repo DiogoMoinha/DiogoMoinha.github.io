@@ -22,19 +22,18 @@
     ];
 
 
-    async function initPlanets() {
-      try {
-       const response = await fetch('system2.json');
-const data = await response.json();
-data.forEach(p => {
-  data[p.name] = p.description;
-});
+   async function initPlanets() {
+  try {
+    const response = await fetch('system2.json');
+    const data = await response.json();
+    data.planets.forEach(p => {
+      planetDescriptions[p.name] = p.description;
+    });
+  } catch (error) {
+    console.error("Erro ao carregar descrições:", error);
+  }
 
-      } catch (error) {
-        console.error("Erro ao carregar descrições:", error);
-      }
-
-      if (navigator.geolocation) {
+  if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(
           (position) => {
             const userLat = position.coords.latitude;
@@ -48,6 +47,9 @@ data.forEach(p => {
         console.error("Geolocalização não suportada.");
       }
     }
+
+
+      
 
     function computeOffset(lat, lon, distance, angle) {
       const R = 6378137;
