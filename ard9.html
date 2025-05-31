@@ -23,31 +23,25 @@
 
 
    async function initPlanets() {
-  try {
-    const response = await fetch('system2.json');
-    const data = await response.json();
-    const planetDescriptions = {};
-data.planets.forEach(p => {
-  planetDescriptions[p.name.toLowerCase()] = p.description;
-});
-window.planetDescriptions = planetDescriptions; // Torna global para uso em outros componentes
+   try {
+        const response = await fetch('system2.json');
+        const data = await response.json();
 
-  } catch (error) {
-    console.error("Erro ao carregar descrições:", error);
-  }
-
-  if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-          (position) => {
-            const userLat = position.coords.latitude;
-            const userLon = position.coords.longitude;
-            createPlanets(userLat, userLon);
-          },
-          (error) => console.error("Erro na geolocalização:", error),
-          { enableHighAccuracy: true }
-        );
-      } else {
-        console.error("Geolocalização não suportada.");
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(
+            (position) => {
+              const userLat = position.coords.latitude;
+              const userLon = position.coords.longitude;
+              createPlanets(userLat, userLon);
+            },
+            (error) => console.error("Error getting location:", error),
+            { enableHighAccuracy: true }
+          );
+        } else {
+          console.error("Geolocation not supported.");
+        }
+      } catch (error) {
+        console.error("Error loading system2.json:", error);
       }
     }
 
@@ -134,7 +128,7 @@ window.planetDescriptions = planetDescriptions; // Torna global para uso em outr
   schema: { name: { type: 'string' } },
   init() {
     this.el.addEventListener('click', () => {
-      const desc = planetDescriptions[this.data.name.toLowerCase()] || "Sem descrição disponível.";
+      const desc = data.planets.description || "Sem descrição disponível.";
       const panel = document.getElementById('info-panel');
       const text = document.getElementById('info-text');
       text.textContent = desc;
