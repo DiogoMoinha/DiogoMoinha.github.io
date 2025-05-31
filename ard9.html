@@ -21,14 +21,13 @@
       { name: "Neptune", color: "darkblue", distance: 45, radius: 1.4, speed: 0.0001, initialAngle: 315 }
     ];
 
-    let planetDescriptions = {};
 
     async function initPlanets() {
       try {
        const response = await fetch('system2.json');
 const data = await response.json();
 data.forEach(p => {
-  planetDescriptions[p.name] = p.description;
+  data[p.name] = p.description;
 });
 
       } catch (error) {
