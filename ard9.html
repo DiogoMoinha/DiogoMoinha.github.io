@@ -26,9 +26,12 @@
   try {
     const response = await fetch('system2.json');
     const data = await response.json();
-    data.planets.forEach(p => {
-      planetDescriptions[p.name] = p.description;
-    });
+    const planetDescriptions = {};
+data.planets.forEach(p => {
+  planetDescriptions[p.name.toLowerCase()] = p.description;
+});
+window.planetDescriptions = planetDescriptions; // Torna global para uso em outros componentes
+
   } catch (error) {
     console.error("Erro ao carregar descrições:", error);
   }
