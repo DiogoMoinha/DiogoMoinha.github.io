@@ -51,9 +51,6 @@ window.planetDescriptions = planetDescriptions; // Torna global para uso em outr
       }
     }
 
-
-      
-
     function computeOffset(lat, lon, distance, angle) {
       const R = 6378137;
       const dLat = (distance * Math.cos(angle * Math.PI / 180)) / R * (180 / Math.PI);
@@ -77,35 +74,43 @@ window.planetDescriptions = planetDescriptions; // Torna global para uso em outr
         sphere.setAttribute("show-plane", { name: planet.name });
 
         if (planet.speed > 0) {
-          sphere.setAttribute("dynamic-movement", {
-            type: "spin",
-            speed: planet.speed,
-            originLat: userLat,
-            originLon: userLon,
-            distance: planet.distance
-          });
-          createOrbitWithCylinders(userLat, userLon, planet.distance);
-        }
-
+  sphere.setAttribute("dynamic-movement", {
+    type: "spin",
+    speed: planet.speed,
+    originLat: userLat,
+    originLon: userLon,
+    distance: planet.distance
+  });
+  createOrbitWithCircles(userLat, userLon, planet.distance);
+}
         entity.appendChild(sphere);
         scene.appendChild(entity);
       });
     }
 
-    function createOrbitWithCylinders(lat, lon, distance) {
-      const scene = document.querySelector("a-scene");
-      for (let angle = 0; angle < 360; angle += 10) {
-        const { lat: newLat, lon: newLon } = computeOffset(lat, lon, distance, angle);
-        const cylinder = document.createElement("a-cylinder");
-        cylinder.setAttribute("gps-new-entity-place", { latitude: newLat, longitude: newLon });
-        cylinder.setAttribute("height", 0.2);
-        cylinder.setAttribute("radius", 0.1);
-        cylinder.setAttribute("color", "white");
-        cylinder.setAttribute("rotation", "-90 90 0");
-        cylinder.setAttribute("material", "opacity: 0.4; transparent: true");
-        scene.appendChild(cylinder);
-      }
+   function createOrbitWithCircles(userLat, userLon, distance, orbitSegments = null) {
+    const scene = document.querySelector("a-scene");
+
+    // Se orbitSegments não for definido, calcula automaticamente
+    const segments = orbitSegments || Math.round(20 + distance * 2); // Ex: 5 → 27, 45 → 88
+
+    for (let i = 0; i < segments; i++) {
+        const angle = (360 / segments) * i;
+        const { lat, lon } = computeOffset(userLat, userLon, distance, angle);
+
+        const circle = document.createElement("a-circle");
+        circle.setAttribute("gps-new-entity-place", {
+            latitude: lat,
+            longitude: lon
+        });
+        circle.setAttribute("radius", 0.1);
+        circle.setAttribute("rotation", "-90 0 0");
+        circle.setAttribute("color", "white");
+        circle.setAttribute("material", "opacity: 0.3; transparent: true");
+
+        scene.appendChild(circle);
     }
+}
 
     AFRAME.registerComponent('dynamic-movement', {
       schema: {
@@ -126,17 +131,17 @@ window.planetDescriptions = planetDescriptions; // Torna global para uso em outr
     });
 
     AFRAME.registerComponent('show-plane', {
-      schema: { name: { type: 'string' } },
-      init() {
-        this.el.addEventListener('click', () => {
-          const desc = planetDescriptions[this.data.name] || "Sem descrição disponível.";
-          const panel = document.getElementById('info-panel');
-          const text = document.getElementById('info-text');
-          text.textContent = desc;
-          panel.style.display = 'block';
-        });
-      }
+  schema: { name: { type: 'string' } },
+  init() {
+    this.el.addEventListener('click', () => {
+      const desc = planetDescriptions[this.data.name.toLowerCase()] || "Sem descrição disponível.";
+      const panel = document.getElementById('info-panel');
+      const text = document.getElementById('info-text');
+      text.textContent = desc;
+      panel.style.display = 'block';
     });
+  }
+});
 
     document.addEventListener("DOMContentLoaded", initPlanets);
   </script>
