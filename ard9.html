@@ -126,11 +126,12 @@
       }
     });
 
-    AFRAME.registerComponent('show-plane', {
+   AFRAME.registerComponent('show-plane', {
   schema: { name: { type: 'string' } },
   init() {
     this.el.addEventListener('click', () => {
-      const desc = planetData.description || "Sem descrição disponível.";
+      const planet = planetData.find(p => p.name === this.data.name);
+      const desc = planet?.description || "Sem descrição disponível.";
       const panel = document.getElementById('info-panel');
       const text = document.getElementById('info-text');
       text.textContent = desc;
@@ -138,6 +139,7 @@
     });
   }
 });
+
 
     document.addEventListener("DOMContentLoaded", initPlanets);
   </script>
