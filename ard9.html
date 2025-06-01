@@ -1,160 +1,176 @@
 <!DOCTYPE html>
-<html lang="pt">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Sistema Solar AR.js</title>
-  <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
-  <script src="https://cdn.rawgit.com/jeromeetienne/ar.js/2.2.1/aframe/build/aframe-ar.min.js"></script>
-  <style>
-    body { margin: 0; overflow: hidden; font-family: sans-serif; }
-    #descriptionPanel {
-      position: fixed;
-      bottom: 10px;
-      left: 10px;
-      max-width: 350px;
-      background: rgba(0,0,0,0.8);
-      color: white;
-      padding: 15px;
-      border-radius: 8px;
-      display: none;
-      z-index: 100;
-    }
-    #descriptionPanel h2 {
-      margin-top: 0;
-    }
-    #closeBtn {
-      background: #cc0000;
-      border: none;
-      color: white;
-      padding: 5px 10px;
-      cursor: pointer;
-      border-radius: 4px;
-      float: right;
-      font-weight: bold;
-    }
-  </style>
-</head>
-<body>
-  <a-scene embedded arjs>
-    <a-marker preset="hiro">
-      <a-entity id="solarSystemRoot"></a-entity>
-    </a-marker>
-    <a-entity camera></a-entity>
-  </a-scene>
-
-  <div id="descriptionPanel">
-    <button id="closeBtn">X</button>
-    <h2 id="planetName"></h2>
-    <p id="planetDescription"></p>
-  </div>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AR.js A-Frame Solar System</title>
+  <script src="https://aframe.io/releases/1.3.0/aframe.min.js"></script>
+  <script src="https://raw.githack.com/AR-js-org/AR.js/3.4.5/three.js/build/ar-threex-location-only.js"></script>
+  <script src="https://raw.githack.com/AR-js-org/AR.js/3.4.5/aframe/build/aframe-ar.js"></script>
 
   <script>
-    // Array planetas com dados e descrições
-    const planetas = [
-      {
-        name: 'Mercúrio',
-        description: 'Mercúrio é o planeta mais próximo do Sol e o menor do Sistema Solar.',
-        distanciafoco1: 3,
-        size: 0.5,
-        color: '#b0b0b0'
-      },
-      {
-        name: 'Vênus',
-        description: 'Vênus é o segundo planeta a partir do Sol e é conhecido como a estrela da manhã.',
-        distanciafoco1: 4.5,
-        size: 0.6,
-        color: '#e0c080'
-      },
-      {
-        name: 'Terra',
-        description: 'A Terra é o nosso planeta, o terceiro a partir do Sol, e o único conhecido a abrigar vida.',
-        distanciafoco1: 6,
-        size: 0.65,
-        color: '#2a63bf'
-      },
-      {
-        name: 'Marte',
-        description: 'Marte é o quarto planeta, conhecido como o planeta vermelho por causa do óxido de ferro na sua superfície.',
-        distanciafoco1: 7.5,
-        size: 0.55,
-        color: '#b74125'
-      }
-      // Adiciona mais planetas se quiseres
+    const planets = [
+      { name: "Sun", color: "yellow", distance: 0, radius: 3, speed: 0 },
+      { name: "Mercury", color: "gray", distance: 5, radius: 0.5, speed: 0.0008, initialAngle: 0 },
+      { name: "Venus", color: "yellow", distance: 8, radius: 1, speed: 0.0006, initialAngle: 45 },
+      { name: "Earth", color: "blue", distance: 12, radius: 1.2, speed: 0.0005, initialAngle: 90 },
+      { name: "Mars", color: "red", distance: 16, radius: 0.8, speed: 0.0004, initialAngle: 135 },
+      { name: "Jupiter", color: "orange", distance: 24, radius: 2, speed: 0.0003, initialAngle: 180 },
+      { name: "Saturn", color: "goldenrod", distance: 30, radius: 1.8, speed: 0.0002, initialAngle: 225 },
+      { name: "Uranus", color: "lightblue", distance: 38, radius: 1.5, speed: 0.00015, initialAngle: 270 },
+      { name: "Neptune", color: "darkblue", distance: 45, radius: 1.4, speed: 0.0001, initialAngle: 315 }
     ];
 
-    // Função para criar órbita com cilindros pequenos
-    function createOrbitWithCircles(radius, segments = 36, parent) {
-      const angleStep = (2 * Math.PI) / segments;
-      for (let i = 0; i < segments; i++) {
-        const angle = i * angleStep;
-        const x = radius * Math.cos(angle);
-        const z = radius * Math.sin(angle);
-        const orbitCircle = document.createElement('a-cylinder');
-        orbitCircle.setAttribute('position', `${x} 0 ${z}`);
-        orbitCircle.setAttribute('height', 0.05);
-        orbitCircle.setAttribute('radius', 0.05);
-        orbitCircle.setAttribute('rotation', '90 0 0');
-        orbitCircle.setAttribute('color', '#888');
-        orbitCircle.setAttribute('opacity', 0.6);
-        orbitCircle.setAttribute('transparent', true);
-        parent.appendChild(orbitCircle);
+
+   async function initPlanets() {
+   try {
+        const response = await fetch('system2.json');
+        const data = await response.json();
+        const planetData = data.planets;
+
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(
+            (position) => {
+              const userLat = position.coords.latitude;
+              const userLon = position.coords.longitude;
+              createPlanets(userLat, userLon);
+            },
+            (error) => console.error("Error getting location:", error),
+            { enableHighAccuracy: true }
+          );
+        } else {
+          console.error("Geolocation not supported.");
+        }
+      } catch (error) {
+        console.error("Error loading system2.json:", error);
       }
     }
 
-    // Componente para animar órbita do planeta
-    AFRAME.registerComponent('orbit-rotation', {
+    function computeOffset(lat, lon, distance, angle) {
+      const R = 6378137;
+      const dLat = (distance * Math.cos(angle * Math.PI / 180)) / R * (180 / Math.PI);
+      const dLon = (distance * Math.sin(angle * Math.PI / 180)) / (R * Math.cos(lat * Math.PI / 180)) * (180 / Math.PI);
+      return { lat: lat + dLat, lon: lon + dLon };
+    }
+
+    function createPlanets(userLat, userLon) {
+      const scene = document.querySelector("a-scene");
+
+      planets.forEach((planet) => {
+        const coords = computeOffset(userLat, userLon, planet.distance, planet.initialAngle);
+        const entity = document.createElement("a-entity");
+
+        const sphere = document.createElement("a-sphere");
+        sphere.setAttribute("gps-new-entity-place", { latitude: coords.lat, longitude: coords.lon });
+        sphere.setAttribute("radius", planet.radius);
+        sphere.setAttribute("color", planet.color);
+        sphere.setAttribute("shadow", "");
+        sphere.setAttribute("cursor", "rayOrigin:mouse");
+        sphere.setAttribute("show-plane", { name: planet.name });
+
+        if (planet.speed > 0) {
+  sphere.setAttribute("dynamic-movement", {
+    type: "spin",
+    speed: planet.speed,
+    originLat: userLat,
+    originLon: userLon,
+    distance: planet.distance
+  });
+  createOrbitWithCircles(userLat, userLon, planet.distance);
+}
+        entity.appendChild(sphere);
+        scene.appendChild(entity);
+      });
+    }
+
+   function createOrbitWithCircles(userLat, userLon, distance, orbitSegments = null) {
+    const scene = document.querySelector("a-scene");
+
+    // Se orbitSegments não for definido, calcula automaticamente
+    const segments = orbitSegments || Math.round(20 + distance * 2); // Ex: 5 → 27, 45 → 88
+
+    for (let i = 0; i < segments; i++) {
+        const angle = (360 / segments) * i;
+        const { lat, lon } = computeOffset(userLat, userLon, distance, angle);
+
+        const circle = document.createElement("a-circle");
+        circle.setAttribute("gps-new-entity-place", {
+            latitude: lat,
+            longitude: lon
+        });
+        circle.setAttribute("radius", 0.1);
+        circle.setAttribute("rotation", "-90 0 0");
+        circle.setAttribute("color", "white");
+        circle.setAttribute("material", "opacity: 0.3; transparent: true");
+
+        scene.appendChild(circle);
+    }
+}
+
+    AFRAME.registerComponent('dynamic-movement', {
       schema: {
-        radius: {type: 'number', default: 5},
-        speed: {type: 'number', default: 0.01},
-        angleOffset: {type: 'number', default: 0}
+        type: { type: 'string' },
+        speed: { type: 'number' },
+        originLat: { type: 'number' },
+        originLon: { type: 'number' },
+        distance: { type: 'number' }
       },
-      init: function () {
-        this.angle = this.data.angleOffset;
-      },
-      tick: function (time, timeDelta) {
-        this.angle += this.data.speed * timeDelta / 16;
-        const x = this.data.radius * Math.cos(this.angle);
-        const z = this.data.radius * Math.sin(this.angle);
-        this.el.setAttribute('position', `${x} 0 ${z}`);
+      init() { this.angle = 0; },
+      tick(time, delta) {
+        if (this.data.type === "spin") {
+          this.angle += this.data.speed * delta;
+          const coords = computeOffset(this.data.originLat, this.data.originLon, this.data.distance, this.angle * (180 / Math.PI));
+          this.el.setAttribute("gps-new-entity-place", { latitude: coords.lat, longitude: coords.lon });
+        }
       }
     });
 
-    // Mostrar descrição no painel
-    function showDescription(name, description) {
-      const panel = document.getElementById('descriptionPanel');
-      document.getElementById('planetName').textContent = name;
-      document.getElementById('planetDescription').textContent = description;
+    AFRAME.registerComponent('show-plane', {
+  schema: { name: { type: 'string' } },
+  init() {
+    this.el.addEventListener('click', () => {
+      const desc = planetData.description || "Sem descrição disponível.";
+      const panel = document.getElementById('info-panel');
+      const text = document.getElementById('info-text');
+      text.textContent = desc;
       panel.style.display = 'block';
-    }
+    });
+  }
+});
 
-    // Fechar painel descrição
-    document.getElementById('closeBtn').onclick = () => {
-      document.getElementById('descriptionPanel').style.display = 'none';
-    };
-
-    // Inicializa sistema solar
-    window.onload = () => {
-      const root = document.getElementById('solarSystemRoot');
-
-      planetas.forEach((planet, i) => {
-        createOrbitWithCircles(planet.distanciafoco1, 36, root);
-
-        const sphere = document.createElement('a-sphere');
-        sphere.setAttribute('radius', planet.size);
-        sphere.setAttribute('color', planet.color);
-        sphere.setAttribute('orbit-rotation', {
-          radius: planet.distanciafoco1,
-          speed: 0.001 + 0.0005 * i,
-          angleOffset: i
-        });
-
-        sphere.addEventListener('click', () => {
-          showDescription(planet.name, planet.description);
-        });
-
-        root.appendChild(sphere);
-      });
-    };
+    document.addEventListener("DOMContentLoaded", initPlanets);
   </script>
+</head>
+<body>
+  <!-- CENA AR -->
+  <a-scene vr-mode-ui="enabled: false" arjs="sourceType: webcam; videoTexture: true; debugUIEnabled: false">
+    <a-camera gps-new-camera></a-camera>
+  </a-scene>
+
+  <div id="info-panel" style="
+  display: none;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(0, 0, 0, 0.85);
+  color: white;
+  padding: 20px;
+  border-radius: 10px;
+  max-width: 80%;
+  text-align: center;
+  font-family: sans-serif;
+  z-index: 999;">
+  <span id="info-text"></span><br><br>
+  <button onclick="document.getElementById('info-panel').style.display='none'" style="
+    background: red;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 1em;">Fechar</button>
+</div>
+
 </body>
 </html>
