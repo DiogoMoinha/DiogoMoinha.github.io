@@ -205,7 +205,7 @@
       }
     }
 
-   function createOrbitRing(lat, lon, distancia) {
+   function createOrbitRing(userLat, userLon, orbitDistance) {
   const ring = document.createElement("a-ring");
   ring.setAttribute("gps-new-entity-place", {latitude: userLat, longitude: userLon});
   ring.setAttribute("radius-inner", distancia - 0.1);
