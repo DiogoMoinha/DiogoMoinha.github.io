@@ -166,14 +166,16 @@
 });
 
   AFRAME.registerComponent('show-plane', {
-  schema: { name: { type: 'string' } , desc: { type : 'string' } },
+  schema: { name: { type: 'string' } , desc: { type : 'string' }, image: { type: 'string' } },
   init() {
     this.el.addEventListener('click', () => {
       //const planet = planetData.find(p => p.name === this.data.name);
       const desc = this.data.desc || "Sem descrição disponível.";
       const panel = document.getElementById('info-panel');
       const text = document.getElementById('info-text');
-      text.innerHTML = `<strong>${this.data.name}</strong><br>${desc}`;
+      text.innerHTML = `<strong>${this.data.name}</strong>
+      <br> <img src=${this.data.image} <br>
+      <br>${desc}`;
       panel.style.display = 'block';
     });
   }
@@ -203,20 +205,23 @@
       }
     }
 
-    function createOrbitRing(userLat, userLon, orbitDistance) {
-    const scene = document.querySelector("a-scene");
-
-    const planetCoords = computeOffset(userLat, userLon, orbitDistance, 0);
+    function createOrbitRing(lat, lon, distancia) {
+    const orbitCenter = document.createElement("a-entity");
+    orbitCenter.setAttribute("gps-new-entity-place", `latitude: ${lat}; longitude: ${lon};`);
 
     const orbitRing = document.createElement("a-ring");
-    orbitRing.setAttribute("gps-new-entity-place", {latitude: userLat, longitude: userLon});
-    orbitRing.setAttribute("radius-inner", orbitDistance - 3);
-    orbitRing.setAttribute("radius-outer", orbitDistance + 3);
-    orbitRing.setAttribute("color", "white");
-    orbitRing.setAttribute("rotation", "-90 0 0");
-    orbitRing.setAttribute("material", "opacity: 0.4; transparent: true");
+    orbitRing.setAttribute("radius-inner", distancia - 0.1);
+    orbitRing.setAttribute("radius-outer", distancia + 0.1);
+    orbitRing.setAttribute("rotation", "-90 0 0");  // colocar no plano XZ
+    orbitRing.setAttribute("material", {
+        color: "#ffffff",
+        shader: "flat",
+        opacity: 0.3,
+        side: "double",
+    });
 
-    scene.appendChild(orbitRing);
+    orbitCenter.appendChild(orbitRing);
+    document.querySelector("a-scene").appendChild(orbitCenter);
 }
 
 
