@@ -173,9 +173,9 @@
       const desc = this.data.desc || "Sem descrição disponível.";
       const panel = document.getElementById('info-panel');
       const text = document.getElementById('info-text');
-      text.innerHTML = `<strong>${this.data.name}</strong>
-      <br> <img src=${this.data.image} <br>
-      <br>${desc}`;
+     text.innerHTML = `<strong>${this.data.name}</strong>
+  <br><img src="${this.data.image}" style="max-width:100%; border-radius:10px;"/><br>
+  <br>${desc}`;
       panel.style.display = 'block';
     });
   }
@@ -205,23 +205,20 @@
       }
     }
 
-    function createOrbitRing(lat, lon, distancia) {
-    const orbitCenter = document.createElement("a-entity");
-    orbitCenter.setAttribute("gps-new-entity-place", `latitude: ${lat}; longitude: ${lon};`);
+   function createOrbitRing(lat, lon, distancia) {
+  const ring = document.createElement("a-ring");
+  ring.setAttribute("gps-new-entity-place", {latitude: userLat, longitude: userLon});
+  ring.setAttribute("radius-inner", distancia - 0.1);
+  ring.setAttribute("radius-outer", distancia + 0.1);
+  ring.setAttribute("rotation", "-90 0 0");  // plano XZ
+  ring.setAttribute("material", {
+    color: "#ffffff",
+    shader: "flat",
+    opacity: 0.3,
+    side: "double"
+  });
 
-    const orbitRing = document.createElement("a-ring");
-    orbitRing.setAttribute("radius-inner", distancia - 0.1);
-    orbitRing.setAttribute("radius-outer", distancia + 0.1);
-    orbitRing.setAttribute("rotation", "-90 0 0");  // colocar no plano XZ
-    orbitRing.setAttribute("material", {
-        color: "#ffffff",
-        shader: "flat",
-        opacity: 0.3,
-        side: "double",
-    });
-
-    orbitCenter.appendChild(orbitRing);
-    document.querySelector("a-scene").appendChild(orbitCenter);
+  document.querySelector("a-scene").appendChild(ring);
 }
 
 
@@ -266,11 +263,12 @@
         sphere.setAttribute("shadow", "");
         const imgSrc = "data:image/jpg;base64," + planet.texture;
         sphere.setAttribute("material", { src: imgSrc, shader: "standard" });
-        sphere.setAttribute("show-plane", 
-        { 
-            name: planet.name, 
-            desc: planet.description 
+        sphere.setAttribute("show-plane", { 
+          name: planet.name, 
+          desc: planet.description,
+          image: imgSrc
         });
+
         
 
         if (planet.speed > 0) {
