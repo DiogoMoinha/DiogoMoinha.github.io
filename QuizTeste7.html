@@ -1,5 +1,3 @@
-# O código HTML completo com sistema de pontuação incluído
-code = """
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -11,6 +9,7 @@ code = """
   <script src="https://raw.githack.com/AR-js-org/AR.js/3.4.5/aframe/build/aframe-ar.js"></script>
   <script>
     let score = 0;
+    let pontos = 400;
 
     function updateScoreDisplay() {
       document.getElementById("scoreDisplay").textContent = "Pontuação: " + score;
@@ -110,8 +109,8 @@ code = """
             btn.disabled = true;
 
             if (i === questionData.rightAnswer) {
-              btn.classList.add('correct');
-              score += 10;
+              btn.classList.add('correto');
+              score += pontos;
               updateScoreDisplay();
               setTimeout(() => {
                 modal.classList.remove('show');
@@ -119,8 +118,8 @@ code = """
                 this.triggeredOnce = false;
               }, 1000);
             } else {
-              btn.classList.add('incorrect');
-              score -= 5;
+              btn.classList.add('incorreto');
+              pontos -= 100;
               updateScoreDisplay();
             }
           });
@@ -317,6 +316,4 @@ code = """
   </a-scene>
 </body>
 </html>
-"""
 
-code[:1000]  # Output truncated for clarity; let me know if you want the full file as a downloadable.
