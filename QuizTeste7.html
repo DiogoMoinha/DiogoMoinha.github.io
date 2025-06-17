@@ -109,17 +109,24 @@
             btn.disabled = true;
 
             if (i === questionData.rightAnswer) {
-              btn.classList.add('correto');
+              btn.classList.add('correct');
               score += pontos;
-              pontos = 400; // Reinicia a variável para o valor original após resposta correta
+              pontos = 400;
+
               updateScoreDisplay();
+
+              this.currentQuestionIndex++;
+              if (this.currentQuestionIndex >= this.questions.length) {
+                this.triggeredOnce = true; // Desativa futuras perguntas
+              } else {
+                this.triggeredOnce = false; // Permite próxima pergunta
+              }
+
               setTimeout(() => {
                 modal.classList.remove('show');
-                this.currentQuestionIndex++;
-                this.triggeredOnce = false;
               }, 1000);
-            } else {
-              btn.classList.add('incorreto');
+            }else {
+              btn.classList.add('incorrect');
               pontos -= 100;
               updateScoreDisplay();
             }
