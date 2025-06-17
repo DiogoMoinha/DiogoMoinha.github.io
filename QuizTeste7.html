@@ -111,6 +111,7 @@
             if (i === questionData.rightAnswer) {
               btn.classList.add('correto');
               score += pontos;
+              pontos = 400; // Reinicia a variável para o valor original após resposta correta
               updateScoreDisplay();
               setTimeout(() => {
                 modal.classList.remove('show');
@@ -264,18 +265,74 @@
     });
   </script>
   <style>
-    body, html { margin: 0; padding: 0; overflow: hidden; }
-    canvas { z-index: 0 !important; position: relative; }
-    .quiz-modal { position: fixed; top: -999px; left: -999px; width: 100vw; height: 100vh;
-      background: rgba(0,0,0,0.7); display: flex; align-items: center; justify-content: center;
-      z-index: 9999; transition: all 0.3s ease; }
-    .quiz-modal.show { top: 0; left: 0; }
-    .quiz-content { background: white; padding: 20px; width: 90%; max-width: 400px;
-      border-radius: 12px; text-align: center; }
-    .quiz-answer { display: block; padding: 10px; margin: 10px auto; width: 100%;
-      background: #eee; border: none; border-radius: 8px; cursor: pointer; }
-    .quiz-answer.correct { background-color: #4CAF50; color: white; }
-    .quiz-answer.incorrect { background-color: #f44336; color: white; }
+    body, html {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+    }
+
+    canvas {
+      z-index: 0 !important;
+      position: relative;
+    }
+
+    .quiz-modal {
+      position: fixed;
+      top: -999px;
+      left: -999px;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0,0,0,0.7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      transition: all 0.3s ease;
+    }
+
+    .quiz-modal.show {
+      top: 0;
+      left: 0;
+    }
+
+    .quiz-content {
+      background: white;
+      padding: 20px;
+      width: 90%;
+      max-width: 400px;
+      border-radius: 12px;
+      text-align: center;
+    }
+
+    .quiz-content h2 {
+      margin-bottom: 20px;
+    }
+
+    .quiz-answer {
+      display: block;
+      padding: 10px;
+      margin: 10px auto;
+      width: 100%;
+      background: #eee;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .quiz-answer:hover {
+      background: #ddd;
+    }
+
+    .quiz-answer.correct {
+      background-color: #4CAF50;
+      color: white;
+    }
+
+    .quiz-answer.incorrect {
+      background-color: #f44336;
+      color: white;
+    }
   </style>
 </head>
 <body>
