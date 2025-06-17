@@ -86,7 +86,8 @@
         }
       },
       showQuestion() {
-        const questionData = this.questions[this.currentQuestionIndex];
+        const randomIndex = Math.floor(Math.random() * this.questions.length);
+        const questionData = this.questions[randomIndex];
         if (!questionData) return;
 
         const modal = document.getElementById('quizModal');
