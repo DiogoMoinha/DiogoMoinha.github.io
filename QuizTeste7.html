@@ -9,7 +9,7 @@
   <script src="https://raw.githack.com/AR-js-org/AR.js/3.4.5/aframe/build/aframe-ar.js"></script>
   <script>
     let score = 0;
-    let pontos = 400;
+    let pontos = 4;
 
     function updateScoreDisplay() {
       document.getElementById("scoreDisplay").textContent = "Pontuação: " + score;
@@ -111,7 +111,7 @@
             if (i === questionData.rightAnswer) {
               btn.classList.add('correct');
               score += pontos;
-              pontos = 400;
+              pontos = 4;
 
               updateScoreDisplay();
 
@@ -127,7 +127,7 @@
               }, 1000);
             }else {
               btn.classList.add('incorrect');
-              pontos -= 100;
+              pontos -= 1;
               updateScoreDisplay();
             }
           });
