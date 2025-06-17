@@ -86,57 +86,53 @@
         }
       },
       showQuestion() {
-        const randomIndex = Math.floor(Math.random() * this.questions.length);
-        const questionData = this.questions[randomIndex];
-        if (!questionData) return;
+  const questionData = this.questions[this.currentQuestionIndex];
+  if (!questionData) return;
 
-        const modal = document.getElementById('quizModal');
-        const planetTitle = document.getElementById('quizPlanetName');
-        planetTitle.textContent = this.el.getAttribute('name') || 'Planeta';
-        const qText = document.getElementById('quizQuestion');
-        const answersContainer = document.getElementById('quizAnswers');
+  const modal = document.getElementById('quizModal');
+  const planetTitle = document.getElementById('quizPlanetName');
+  planetTitle.textContent = this.el.getAttribute('name') || 'Planet';
+  const qText = document.getElementById('quizQuestion');
+  const answersContainer = document.getElementById('quizAnswers');
 
-        qText.textContent = questionData.question;
-        answersContainer.innerHTML = '';
+  qText.textContent = questionData.question;
+  answersContainer.innerHTML = '';
 
-        questionData.answers.forEach((answer, i) => {
-          const btn = document.createElement('button');
-          btn.className = 'quiz-answer';
-          btn.textContent = answer;
+  questionData.answers.forEach((answer, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'quiz-answer';
+    btn.textContent = answer;
 
-          btn.addEventListener('click', () => {
-            if (btn.classList.contains('clicked')) return;
-            btn.classList.add('clicked');
-            btn.disabled = true;
+    btn.addEventListener('click', () => {
+      // Desativar todos os botões após uma escolha
+      const allButtons = answersContainer.querySelectorAll('button');
+      allButtons.forEach(b => {
+        b.disabled = true;
+        b.classList.add('clicked');
+      });
 
-            if (i === questionData.rightAnswer) {
-              btn.classList.add('correct');
-              score += pontos;
-              pontos = 4;
+      // Marcar resposta correta
+      allButtons[questionData.rightAnswer].classList.add('correct');
 
-              updateScoreDisplay();
-
-              this.currentQuestionIndex++;
-              if (this.currentQuestionIndex >= this.questions.length) {
-                this.triggeredOnce = true; // Desativa futuras perguntas
-              } else {
-                this.triggeredOnce = false; // Permite próxima pergunta
-              }
-
-              setTimeout(() => {
-                modal.classList.remove('show');
-              }, 2000);
-            }else {
-              btn.classList.add('incorrect');
-              pontos -= 1;
-              updateScoreDisplay();
-            }
-          });
-          answersContainer.appendChild(btn);
-        });
-
-        modal.classList.add('show');
+      // Se errada, também marcar a escolhida como incorreta
+      if (i !== questionData.rightAnswer) {
+        btn.classList.add('incorrect');
       }
+
+      // Esperar antes de fechar o modal
+      setTimeout(() => {
+        modal.classList.remove('show');
+        this.currentQuestionIndex++;
+        this.triggeredOnce = false;
+      }, 2000); // Espera de 2 segundos
+    });
+
+    answersContainer.appendChild(btn);
+  });
+
+  modal.classList.add('show');
+}
+
     });
 
     AFRAME.registerComponent('planet-distance-tracker', {
