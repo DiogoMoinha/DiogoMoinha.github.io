@@ -13,6 +13,15 @@
     let originLat = null;
     let originLon = null;
 
+    navigator.geolocation.getCurrentPosition((position) => {
+    originLat = position.coords.latitude;
+    originLon = position.coords.longitude;
+    createPlanets(originLat, originLon, data);
+    }, (err) => {
+    console.error(err);
+    }, { enableHighAccuracy: true });
+
+
     // Guardar planetas concluídos
     let completedPlanets = JSON.parse(localStorage.getItem("completedPlanets") || "[]");
 
