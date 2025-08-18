@@ -47,27 +47,32 @@ let completedPlanets = [];
     return R * c;
   }
 
-  // NOVA FUNÇÃO → bandeira + anel brilhante
-  function showCompletionMark(planetEl) {
-  // Bandeira
-  const flag = document.createElement("a-image");
-  flag.setAttribute("src", "#flagImg"); // usa o asset já carregado
-  flag.setAttribute("align", "center");
-  flag.setAttribute("position", `0 ${planetEl.getAttribute("radius") + 1} 0`);
-  flag.setAttribute("scale", "1.5 1.5 1.5");
-  flag.setAttribute("side", "double");
-  flag.setAttribute("animation", "property=rotation; to=0 15 0; dur=800; dir=alternate; loop=true; easing=easeInOutSine");
-  planetEl.appendChild(flag);
+  // ✅ Marca de planeta concluído: checkmark + anel brilhante
+function showCompletionMark(planetEl) {
+  // --- Checkmark verde ---
+  const check = document.createElement("a-text");
+  check.setAttribute("value", "✓");
+  check.setAttribute("color", "lime");
+  check.setAttribute("align", "center");
+  check.setAttribute("scale", "3 3 3");
+  check.setAttribute("position", `0 ${parseFloat(planetEl.getAttribute("radius")) + 1} 0`);
+  check.setAttribute("side", "double");
+  check.setAttribute("animation", "property=rotation; to=0 360 0; loop=true; dur=3000; easing=linear");
+  planetEl.appendChild(check);
 
-  // Anel brilhante
+  // --- Anel brilhante ---
   const ring = document.createElement("a-torus");
   ring.setAttribute("radius", parseFloat(planetEl.getAttribute("radius")) + 0.5);
   ring.setAttribute("radius-tubular", 0.05);
   ring.setAttribute("rotation", "90 0 0");
-  ring.setAttribute("material", "color: yellow; emissive: yellow; emissiveIntensity: 1; opacity: 0.7; transparent: true");
+  ring.setAttribute(
+    "material",
+    "color: lime; emissive: lime; emissiveIntensity: 1; opacity: 0.7; transparent: true"
+  );
   ring.setAttribute("animation", "property=rotation; to=90 360 0; loop=true; dur=4000; easing=linear");
   planetEl.appendChild(ring);
 }
+
 
 
   AFRAME.registerComponent('dynamic-movement', {
