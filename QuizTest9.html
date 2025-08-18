@@ -72,6 +72,48 @@ let completedPlanets = [];
   }
 }
 
+function createPlanets(userLat, userLon, data) {
+      const planetData = data.planets;
+      const scene = document.querySelector("a-scene");
+
+      planetData.forEach((planet) => {
+        const coords = computeOffset(originLat, originLon, planet.distanciafoco1, 0);
+        const entity = document.createElement("a-entity");
+        entity.setAttribute("cursor", "rayOrigin:mouse");
+
+        const sphere = document.createElement("a-sphere");
+        sphere.setAttribute("name", planet.name);
+        sphere.setAttribute("gps-new-entity-place", { latitude: coords.lat, longitude: coords.lon });
+        sphere.setAttribute("radius", planet.size);
+        sphere.setAttribute("shadow", "");
+        const imgSrc = "data:image/jpg;base64," + planet.texture;
+        sphere.setAttribute("material", { src: imgSrc, shader: "standard" });
+        sphere.setAttribute("show-plane", { name: planet.name, desc: planet.description, image: planet.image });
+
+        if (planet.speed > 0) {
+          sphere.setAttribute("dynamic-movement", {
+            type: "spin",
+            speed: planet.speed,
+            originLat: originLat,
+            originLon: originLon,
+            distance: planet.distanciafoco1
+            });
+          createOrbitRing(originLat, originLon, planet.distanciafoco1);
+        }
+
+        if (planet.questions && planet.questions.length > 0) {
+          sphere.setAttribute("proximity-check", {
+            range: 5,
+            questions: JSON.stringify(planet.questions),
+            triggered: false
+          });
+        }
+
+        entity.appendChild(sphere);
+        scene.appendChild(entity);
+      });
+    }
+
   // ✅ Marca de planeta concluído: checkmark + anel brilhante
 function showCompletionMark(planetEl) {
   // --- Checkmark verde ---
@@ -213,6 +255,46 @@ function showCompletionMark(planetEl) {
     }
   });
 
+  AFRAME.registerComponent('planet-distance-tracker', {
+      tick() {
+        const camera = document.querySelector('[gps-new-camera]');
+        const gpsComponent = camera.components['gps-new-camera'];
+        if (!gpsComponent || !gpsComponent._currentPosition) return;
+
+        const camCoords = gpsComponent._currentPosition;
+        const planets = document.querySelectorAll('[gps-new-entity-place]');
+
+        let closest = null;
+        let minDistance = Infinity;
+
+        planets.forEach((planet) => {
+          const entityCoords = planet.getAttribute('gps-new-entity-place');
+          if (!entityCoords) return;
+
+          const dist = getDistanceFromLatLonInM(
+            camCoords.latitude,
+            camCoords.longitude,
+            entityCoords.latitude,
+            entityCoords.longitude
+          );
+
+          if (dist < minDistance) {
+            minDistance = dist;
+            closest = planet;
+          }
+        });
+
+        const display = document.getElementById('distanceDisplay');
+        if (closest && minDistance < 1000) {
+          const name = closest.getAttribute('name') || 'um planeta';
+          display.textContent = `${Math.round(minDistance)} metros até ${name}`;
+        } else if (closest) {
+          const name = closest.getAttribute('name') || 'um planeta';
+          display.textContent = `Aproximando-se de ${name}`;
+        }
+      }
+    });
+
   // Atualizar pontuação no ecrã logo no carregamento
  document.addEventListener("DOMContentLoaded", () => {
       initPlanets();
@@ -269,9 +351,6 @@ function showCompletionMark(planetEl) {
     z-index: 9999; pointer-events: none; font-family: sans-serif;">
     Pontuação: 0
   </div>
-
-  <a-scene vr-mode-ui="enabled: false" 
-         arjs="sourceType: webcam; videoTexture: true; debugUIEnabled: false">
 
  <a-scene vr-mode-ui="enabled: false" arjs="sourceType: webcam; videoTexture: true; debugUIEnabled: false">
     <a-camera gps-new-camera="gpsMinDistance: 1" planet-distance-tracker></a-camera>
