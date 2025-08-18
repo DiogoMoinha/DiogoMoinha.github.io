@@ -47,6 +47,31 @@ let completedPlanets = [];
     return R * c;
   }
 
+   async function initPlanets() {
+  try {
+    const response = await fetch('system2.json');
+    const data = await response.json();
+
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          // Guardar posição inicial uma única vez
+          originLat = position.coords.latitude;
+          originLon = position.coords.longitude;
+
+          createPlanets(originLat, originLon, data);
+        },
+        (error) => console.error("Erro ao obter localização:", error),
+        { enableHighAccuracy: true }
+      );
+    } else {
+      console.error("Geolocalização não suportada.");
+    }
+  } catch (error) {
+    console.error("Erro ao carregar system2.json:", error);
+  }
+}
+
   // ✅ Marca de planeta concluído: checkmark + anel brilhante
 function showCompletionMark(planetEl) {
   // --- Checkmark verde ---
@@ -189,9 +214,10 @@ function showCompletionMark(planetEl) {
   });
 
   // Atualizar pontuação no ecrã logo no carregamento
-  window.addEventListener('DOMContentLoaded', () => {
-    updateScoreDisplay();
-  });
+ document.addEventListener("DOMContentLoaded", () => {
+      initPlanets();
+      updateScoreDisplay();
+    });
 </script>
 
   <style>
