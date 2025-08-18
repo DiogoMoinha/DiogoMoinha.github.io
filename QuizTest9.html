@@ -247,14 +247,9 @@ function showCompletionMark(planetEl) {
   <a-scene vr-mode-ui="enabled: false" 
          arjs="sourceType: webcam; videoTexture: true; debugUIEnabled: false">
 
-  <!-- 🔹 Pré-carregamento de assets -->
-  <a-assets>
-    <!-- Versão mais leve da bandeira (256px) -->
-    <img id="flagImg" src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/fc/Flag_icon.svg/256px-Flag_icon.svg.png">
-  </a-assets>
-
-  <a-camera gps-new-camera="gpsMinDistance: 1" planet-distance-tracker></a-camera>
-</a-scene>
+ <a-scene vr-mode-ui="enabled: false" arjs="sourceType: webcam; videoTexture: true; debugUIEnabled: false">
+    <a-camera gps-new-camera="gpsMinDistance: 1" planet-distance-tracker></a-camera>
+  </a-scene>
 
 </body>
 </html>
