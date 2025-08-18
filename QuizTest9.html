@@ -105,33 +105,36 @@
           btn.textContent = answer;
 
           btn.addEventListener('click', () => {
-            if (btn.classList.contains('clicked')) return;
-            btn.classList.add('clicked');
-            btn.disabled = true;
+          if (btn.classList.contains('clicked')) return;
+          btn.classList.add('clicked');
+          btn.disabled = true;
 
-            if (i === questionData.rightAnswer) {
-              btn.classList.add('correct');
-              score += pontos;
-              pontos = 4;
+          if (i === questionData.rightAnswer) {
+            btn.classList.add('correct');
+            score += pontos;
+            pontos = 4;
 
-              updateScoreDisplay();
+            updateScoreDisplay();
 
-              this.currentQuestionIndex++;
-              if (this.currentQuestionIndex >= this.questions.length) {
-                this.triggeredOnce = true; // Desativa futuras perguntas
-              } else {
-                this.triggeredOnce = false; // Permite próxima pergunta
-              }
+            this.currentQuestionIndex++;
+            if (this.currentQuestionIndex >= this.questions.length) {
+              this.triggeredOnce = true; // Desativa futuras perguntas
 
-              setTimeout(() => {
-                modal.classList.remove('show');
-              }, 1000);
-            }else {
-              btn.classList.add('incorrect');
-              pontos -= 1;
-              updateScoreDisplay();
+              // ✅ Mostrar marca de conclusão no planeta
+              showCompletionMark(this.el);
+            } else {
+              this.triggeredOnce = false; // Permite próxima pergunta
             }
-          });
+
+            setTimeout(() => {
+              modal.classList.remove('show');
+            }, 1000);
+          } else {
+            btn.classList.add('incorrect');
+            pontos -= 1;
+            updateScoreDisplay();
+          }
+        });
           answersContainer.appendChild(btn);
         });
 
