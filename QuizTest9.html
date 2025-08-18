@@ -49,25 +49,26 @@ let completedPlanets = [];
 
   // NOVA FUNÇÃO → bandeira + anel brilhante
   function showCompletionMark(planetEl) {
-    // Bandeira
-    const flag = document.createElement("a-image");
-    flag.setAttribute("src", "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fc/Flag_icon.svg/1024px-Flag_icon.svg.png");
-    flag.setAttribute("align", "center");
-    flag.setAttribute("position", `0 ${planetEl.getAttribute("radius") + 1} 0`);
-    flag.setAttribute("scale", "1.5 1.5 1.5");
-    flag.setAttribute("side", "double");
-    flag.setAttribute("animation", "property=rotation; to=0 15 0; dur=800; dir=alternate; loop=true; easing=easeInOutSine");
-    planetEl.appendChild(flag);
+  // Bandeira
+  const flag = document.createElement("a-image");
+  flag.setAttribute("src", "#flagImg"); // usa o asset já carregado
+  flag.setAttribute("align", "center");
+  flag.setAttribute("position", `0 ${planetEl.getAttribute("radius") + 1} 0`);
+  flag.setAttribute("scale", "1.5 1.5 1.5");
+  flag.setAttribute("side", "double");
+  flag.setAttribute("animation", "property=rotation; to=0 15 0; dur=800; dir=alternate; loop=true; easing=easeInOutSine");
+  planetEl.appendChild(flag);
 
-    // Anel brilhante
-    const ring = document.createElement("a-torus");
-    ring.setAttribute("radius", parseFloat(planetEl.getAttribute("radius")) + 0.5);
-    ring.setAttribute("radius-tubular", 0.05);
-    ring.setAttribute("rotation", "90 0 0");
-    ring.setAttribute("material", "color: yellow; emissive: yellow; emissiveIntensity: 1; opacity: 0.7; transparent: true");
-    ring.setAttribute("animation", "property=rotation; to=90 360 0; loop=true; dur=4000; easing=linear");
-    planetEl.appendChild(ring);
-  }
+  // Anel brilhante
+  const ring = document.createElement("a-torus");
+  ring.setAttribute("radius", parseFloat(planetEl.getAttribute("radius")) + 0.5);
+  ring.setAttribute("radius-tubular", 0.05);
+  ring.setAttribute("rotation", "90 0 0");
+  ring.setAttribute("material", "color: yellow; emissive: yellow; emissiveIntensity: 1; opacity: 0.7; transparent: true");
+  ring.setAttribute("animation", "property=rotation; to=90 360 0; loop=true; dur=4000; easing=linear");
+  planetEl.appendChild(ring);
+}
+
 
   AFRAME.registerComponent('dynamic-movement', {
     schema: {
@@ -238,8 +239,17 @@ let completedPlanets = [];
     Pontuação: 0
   </div>
 
-  <a-scene vr-mode-ui="enabled: false" arjs="sourceType: webcam; videoTexture: true; debugUIEnabled: false">
-    <a-camera gps-new-camera="gpsMinDistance: 1" planet-distance-tracker></a-camera>
-  </a-scene>
+  <a-scene vr-mode-ui="enabled: false" 
+         arjs="sourceType: webcam; videoTexture: true; debugUIEnabled: false">
+
+  <!-- 🔹 Pré-carregamento de assets -->
+  <a-assets>
+    <!-- Versão mais leve da bandeira (256px) -->
+    <img id="flagImg" src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/fc/Flag_icon.svg/256px-Flag_icon.svg.png">
+  </a-assets>
+
+  <a-camera gps-new-camera="gpsMinDistance: 1" planet-distance-tracker></a-camera>
+</a-scene>
+
 </body>
 </html>
