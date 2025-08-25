@@ -6,31 +6,40 @@
   <script src="https://raw.githack.com/AR-js-org/AR.js/3.4.5/aframe/build/aframe-ar.js"></script>
   <link rel="stylesheet" href="css/style.css">
 
-  <!-- Ficheiros JS separados -->
-  <script src="js/score.js"></script>
-  <script src="js/effects.js"></script>
-  <script src="js/planetas.js"></script>
-  <script src="js/quiz.js"></script>
-  <script src="js/componentes.js"></script>
-  <script src="js/iniciar.js"></script>
+  <!-- Scripts -->
+  <script src="score.js"></script>
+  <script src="effects.js"></script>
+  <script src="planets.js"></script>
+  <script src="quiz.js"></script>
+  <script src="components.js"></script>
+  <script src="init.js"></script>
 </head>
 <body>
-  <!-- Pontuação -->
+  <!-- HUD de pontuação -->
   <div id="scoreDisplay">Pontuação: 0</div>
 
-  <!-- Quiz -->
+  <!-- Modal do Quiz -->
   <div id="quizModal" style="display:none;">
     <h2 id="quizPlanetName"></h2>
     <p id="quizQuestion"></p>
     <div id="quizAnswers"></div>
   </div>
 
+  <!-- Modal de Descrição -->
+  <div id="descriptionModal" style="display:none;">
+    <h2 id="descPlanetName"></h2>
+    <p id="descPlanetText"></p>
+    <button onclick="closeDescription()">Fechar</button>
+  </div>
+
   <!-- Cena AR -->
-  <a-scene vr-mode-ui="enabled: false"
-           embedded
-           arjs="sourceType: webcam; videoTexture: true; debugUIEnabled: false"
-           renderer="antialias: true; alpha: true">
-    <a-camera gps-new-camera="gpsMinDistance: 5" look-controls></a-camera>
+  <a-scene
+    vr-mode-ui="enabled: false"
+    embedded
+    arjs="sourceType: webcam; videoTexture: true; debugUIEnabled: false"
+    renderer="antialias: true; alpha: true">
+
+    <a-entity gps-new-camera="gpsMinDistance: 5" look-controls></a-entity>
   </a-scene>
 </body>
 </html>

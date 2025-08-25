@@ -1,19 +1,19 @@
-function showCompletionMark(planetEl) {
-  const check = document.createElement("a-text");
-  check.setAttribute("value", "✓");
-  check.setAttribute("color", "lime");
-  check.setAttribute("align", "center");
-  check.setAttribute("scale", "3 3 3");
-  check.setAttribute("position", `0 ${parseFloat(planetEl.getAttribute("radius")) + 1} 0`);
-  check.setAttribute("side", "double");
-  check.setAttribute("animation", "property=rotation; to=0 360 0; loop=true; dur=3000; easing=linear");
-  planetEl.appendChild(check);
+function createOrbitWithCircles(scene, lat, lon, distance) {
+  const orbit = document.createElement("a-entity");
+  orbit.setAttribute("geometry", `primitive: torus; radius: ${distance}; radiusTubular: 0.05`);
+  orbit.setAttribute("rotation", "-90 0 0");
+  orbit.setAttribute("material", "color: gray; opacity: 0.5");
+  orbit.setAttribute("gps-new-entity-place", `latitude: ${lat}; longitude: ${lon}`);
+  scene.appendChild(orbit);
+}
 
-  const ring = document.createElement("a-torus");
-  ring.setAttribute("radius", parseFloat(planetEl.getAttribute("radius")) + 0.5);
-  ring.setAttribute("radius-tubular", 0.05);
-  ring.setAttribute("rotation", "90 0 0");
-  ring.setAttribute("material", "color: lime; emissive: lime; emissiveIntensity: 1; opacity: 0.7; transparent: true");
-  ring.setAttribute("animation", "property=rotation; to=90 360 0; loop=true; dur=4000; easing=linear");
-  planetEl.appendChild(ring);
+function showCompletionMark(planetName) {
+  const planet = document.getElementById(planetName);
+  if (!planet) return;
+
+  const mark = document.createElement("a-entity");
+  mark.setAttribute("geometry", "primitive: ring; radiusInner: 0.3; radiusOuter: 0.5");
+  mark.setAttribute("material", "color: green; opacity: 0.8");
+  mark.setAttribute("rotation", "-90 0 0");
+  planet.appendChild(mark);
 }

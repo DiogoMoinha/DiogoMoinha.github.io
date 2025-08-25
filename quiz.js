@@ -1,31 +1,29 @@
-function showQuizModal(planetName, questions, onAnswered) {
+function showQuiz(planet) {
   const modal = document.getElementById("quizModal");
-  const title = document.getElementById("quizPlanetName");
-  const questionEl = document.getElementById("quizQuestion");
-  const answersEl = document.getElementById("quizAnswers");
+  document.getElementById("quizPlanetName").textContent = planet.name;
+  document.getElementById("quizQuestion").textContent = planet.quiz.question;
 
-  title.textContent = planetName;
-  const current = questions[0];
-  questionEl.textContent = current.q;
-  answersEl.innerHTML = "";
+  const answersDiv = document.getElementById("quizAnswers");
+  answersDiv.innerHTML = "";
 
-  current.answers.forEach((answer, i) => {
+  planet.quiz.answers.forEach((ans) => {
     const btn = document.createElement("button");
-    btn.textContent = answer;
-    btn.onclick = () => {
-      if (i === current.rightAnswer) {
-        score += 10;
-        updateScoreDisplay();
-        modal.style.display = "none";
-        onAnswered(true);
-      } else {
-        score -= 5;
-        updateScoreDisplay();
-        btn.style.backgroundColor = "red";
-      }
-    };
-    answersEl.appendChild(btn);
+    btn.textContent = ans.text;
+    btn.onclick = () => checkAnswer(planet, ans.correct);
+    answersDiv.appendChild(btn);
   });
 
   modal.style.display = "block";
+}
+
+function checkAnswer(planet, correct) {
+  const modal = document.getElementById("quizModal");
+  modal.style.display = "none";
+
+  if (correct) {
+    updateScore(10);
+    showCompletionMark(planet.name);
+  } else {
+    updateScore(-5);
+  }
 }
