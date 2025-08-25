@@ -222,7 +222,8 @@ function showCompletionMark(planetEl) {
 }
 
 
-   async function initPlanets() {
+   // Troca o nome aqui
+async function initPlanetas() {
   try {
     const response = await fetch('system2.json');
     const data = await response.json();
@@ -230,7 +231,6 @@ function showCompletionMark(planetEl) {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
-          // Guardar posição inicial uma única vez
           originLat = position.coords.latitude;
           originLon = position.coords.longitude;
 
@@ -246,6 +246,13 @@ function showCompletionMark(planetEl) {
     console.error("Erro ao carregar system2.json:", error);
   }
 }
+
+// E chama assim:
+document.addEventListener("DOMContentLoaded", () => {
+  initPlanetas();
+  updateScoreDisplay();
+});
+
 
 
     function createOrbitRing(userLat, userLon, orbitDistance) {
