@@ -1,0 +1,32 @@
+body { margin: 0; font-family: Arial, sans-serif; }
+
+#scoreDisplay {
+  position: fixed; top: 10px; left: 10px;
+  background: rgba(0,0,0,0.7); color: white;
+  padding: 6px 12px; border-radius: 6px;
+  font-size: 16px; z-index: 1000;
+}
+
+#quizModal, #descriptionModal {
+  position: fixed; top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  background: white; border-radius: 10px;
+  padding: 20px; max-width: 300px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.4);
+  z-index: 2000;
+}
+
+#quizAnswers button {
+  display: block; width: 100%; margin: 6px 0;
+  padding: 10px; border: none;
+  background: #2196F3; color: white;
+  border-radius: 6px; cursor: pointer;
+}
+
+#quizAnswers button:hover { background: #0b7dda; }
+
+button {
+  background: #f44336; border: none;
+  color: white; border-radius: 6px;
+  padding: 8px 12px; cursor: pointer;
+}
