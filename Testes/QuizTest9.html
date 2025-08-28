@@ -260,8 +260,6 @@ document.addEventListener("DOMContentLoaded", () => {
   updateScoreDisplay();
 });
 
-
-
     function createOrbitRing(userLat, userLon, orbitDistance) {
       const ring = document.createElement("a-ring");
       ring.setAttribute("gps-new-entity-place", {latitude: userLat, longitude: userLon});
@@ -313,11 +311,7 @@ document.addEventListener("DOMContentLoaded", () => {
         scene.appendChild(entity);
       });
     }
-
-    document.addEventListener("DOMContentLoaded", () => {
-      initPlanets();
-      updateScoreDisplay();
-    });
+    
   </script>
   <style>
     body, html {
