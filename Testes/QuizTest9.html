@@ -196,31 +196,23 @@
     });
 
    function showCompletionMark(planetEl) {
-  const planetRadius = parseFloat(planetEl.getAttribute("radius")) || 1;
+  const mark = document.createElement("a-plane");
 
-  // --- Plano acima do planeta ---
-  const plane = document.createElement("a-plane");
-  plane.setAttribute("color", "lime");
-  plane.setAttribute("opacity", "0.8");
-  plane.setAttribute("height", "1");
-  plane.setAttribute("width", "1.5");
-  plane.setAttribute("position", `0 ${planetRadius + 1.5} 0`);
-  plane.setAttribute("rotation", "-90 0 0");
-  plane.setAttribute("look-at", "[gps-new-camera]"); // faz o plano virar sempre para a câmara
-  document.querySelector("a-scene").appendChild(plane);
+  mark.setAttribute("geometry", { width: 1, height: 0.5 });
+  mark.setAttribute("material", { color: "green", opacity: 0.9 });
+  mark.setAttribute("text", {
+    value: "✔ Certo",
+    align: "center",
+    color: "#fff",
+    width: 4
+  });
 
+  // mete 1 unidade acima do planeta
+  mark.setAttribute("position", "0 1 0");
 
-  // --- Texto "✔ CERTO" no plano ---
-  const text = document.createElement("a-text");
-  text.setAttribute("value", "✔ CERTO");
-  text.setAttribute("color", "white");
-  text.setAttribute("align", "center");
-  text.setAttribute("position", "0 0 0.01");
-  text.setAttribute("scale", "2 2 2");
-  plane.appendChild(text);
-
-  planetEl.appendChild(plane);
+  planetEl.appendChild(mark);
 }
+
 
 
 
