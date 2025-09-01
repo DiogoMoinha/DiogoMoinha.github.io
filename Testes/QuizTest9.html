@@ -195,7 +195,7 @@
       }
     });
 
-   function showCompletionMark(planetEl) {
+  function showCompletionMark(planetEl) {
   const mark = document.createElement("a-plane");
 
   mark.setAttribute("geometry", { width: 1, height: 0.5 });
@@ -207,11 +207,17 @@
     width: 4
   });
 
-  // mete 1 unidade acima do planeta
+  // mete 3 unidades acima do planeta
   mark.setAttribute("position", "0 3 0");
 
-  planetEl.appendChild(mark);
+  // planetEl aqui é o <a-sphere>, por isso vamos ao pai (<a-entity>)
+  if (planetEl.parentEl) {
+    planetEl.parentEl.appendChild(mark);
+  } else {
+    planetEl.appendChild(mark); // fallback
+  }
 }
+
 
 
 
