@@ -199,28 +199,34 @@
   function showCompletionMark(planetEl) {
   const mark = document.createElement("a-plane");
 
-  console.log("✔ Marca chamada para:", planetEl.getAttribute("id") || planetEl.getAttribute("name"));
+  // raio do planeta (default 1)
+  const planetRadius = planetEl.getAttribute("radius") || 1;
 
+  // escala proporcional ao tamanho do planeta
+  const scaleFactor = 4;
 
-  mark.setAttribute("geometry", { width: 1.5, height: 0.7 });
+  mark.setAttribute("geometry", {
+    width: scaleFactor * 2,
+    height: scaleFactor
+  });
+
   mark.setAttribute("material", { color: "green", opacity: 0.9 });
   mark.setAttribute("text", {
     value: "✔ Certo",
     align: "center",
     color: "#fff",
-    width: 4
+    width: scaleFactor * 3
   });
 
-  // Coloca a marca  (metade do raio do planeta + extra) acima da esfera
-  const planetRadius = planetEl.getAttribute("radius") || 1;
-  mark.setAttribute("position", `0 ${planetRadius + 1.5} 0`);
+  // posição sempre acima do planeta
+  mark.setAttribute("position", `0 1 0`);
 
-  // Mantém o ✔ sempre virado para a câmara
+  // sempre virado para a câmara
   mark.setAttribute("look-at", "[gps-new-camera]");
 
-  // Adiciona dentro da esfera (que já tem gps-new-entity-place)
   planetEl.appendChild(mark);
 }
+
 
 
 
