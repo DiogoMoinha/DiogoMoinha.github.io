@@ -199,35 +199,21 @@
   function showCompletionMark(planetEl) {
   const mark = document.createElement("a-plane");
 
-  // raio do planeta (default 1)
   const planetRadius = planetEl.getAttribute("radius") || 1;
+  const scaleFactor = 3; // ajusta conforme necessário
 
-  // escala proporcional ao tamanho do planeta
-  const scaleFactor = 3;
-
-  mark.setAttribute("geometry", {
-    width: scaleFactor * 2,
-    height: scaleFactor
-  });
-
+  mark.setAttribute("geometry", { width: scaleFactor * 2, height: scaleFactor });
   mark.setAttribute("material", { color: "green", opacity: 0.9 });
-  mark.setAttribute("text", {
-    value: "✔ Certo",
-    align: "center",
-    color: "#fff",
-    width: scaleFactor * 3
-  });
+  mark.setAttribute("text", { value: "✔ Certo", align: "center", color: "#fff", width: scaleFactor * 3 });
 
-  // posição sempre acima do planeta
-  mark.setAttribute("position", `0 10 0`);
+  // colocar acima do planeta
+  mark.setAttribute("position", `0 ${planetRadius + 1} 0`);
 
-  // sempre virado para a câmara
+  // sempre olhar para a câmara
   mark.setAttribute("look-at", "[gps-new-camera]");
 
   planetEl.appendChild(mark);
 }
-
-
 
 
    // Troca o nome aqui
@@ -310,9 +296,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
         entity.appendChild(sphere);
         scene.appendChild(entity);
-
-        // DEBUG: forçar ✔ a aparecer
-        showCompletionMark(sphere);
       });
     }
     
