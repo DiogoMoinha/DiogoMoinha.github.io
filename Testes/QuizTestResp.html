@@ -203,7 +203,7 @@
   const planetRadius = planetEl.getAttribute("radius") || 1;
 
   // escala proporcional ao tamanho do planeta
-  const scaleFactor = 4;
+  const scaleFactor = 3;
 
   mark.setAttribute("geometry", {
     width: scaleFactor * 2,
@@ -219,7 +219,7 @@
   });
 
   // posição sempre acima do planeta
-  mark.setAttribute("position", `0 1 0`);
+  mark.setAttribute("position", `0 5 0`);
 
   // sempre virado para a câmara
   mark.setAttribute("look-at", "[gps-new-camera]");
