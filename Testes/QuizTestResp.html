@@ -91,6 +91,7 @@
         const questionData = this.questions[randomIndex];
         if (!questionData) return;
 
+        const planetEl = this.el;
         const modal = document.getElementById('quizModal');
         const planetTitle = document.getElementById('quizPlanetName');
         planetTitle.textContent = this.el.getAttribute('name') || 'Planeta';
