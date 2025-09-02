@@ -53,96 +53,96 @@
     });
 
     AFRAME.registerComponent('proximity-check', {
-      schema: {
-        range: { type: 'number', default: 5 },
-        questions: { type: 'string', default: '[]' },
-        triggered: { type: 'boolean', default: false }
-      },
-      init() {
-        this.questions = JSON.parse(this.data.questions);
-        this.currentQuestionIndex = 0;
-        this.triggeredOnce = false;
-      },
-      tick() {
-        if (this.triggeredOnce || this.currentQuestionIndex >= this.questions.length) return;
+  schema: {
+    range: { type: 'number', default: 5 },
+    questions: { type: 'string', default: '[]' },
+    triggered: { type: 'boolean', default: false }
+  },
+  init() {
+    this.questions = JSON.parse(this.data.questions);
+    this.currentQuestionIndex = 0;
+    this.triggeredOnce = false;
+    this.completed = false;     // 👈 novo: planeta já concluído?
+  },
+  tick() {
+    if (this.triggeredOnce || this.completed) return; // 👈 se concluído, não volta a abrir
 
-        const camera = document.querySelector('[gps-new-camera]');
-        const gpsComponent = camera.components['gps-new-camera'];
-        if (!gpsComponent || !gpsComponent._currentPosition) return;
+    const camera = document.querySelector('[gps-new-camera]');
+    const gpsComponent = camera.components['gps-new-camera'];
+    if (!gpsComponent || !gpsComponent._currentPosition) return;
 
-        const camCoords = camera.components['gps-new-camera']._currentPosition;
-        const entityCoords = this.el.getAttribute('gps-new-entity-place');
-        if (!entityCoords) return;
+    const camCoords = gpsComponent._currentPosition;
+    const entityCoords = this.el.getAttribute('gps-new-entity-place');
+    if (!entityCoords) return;
 
-        const dist = getDistanceFromLatLonInM(
-          camCoords.latitude,
-          camCoords.longitude,
-          entityCoords.latitude,
-          entityCoords.longitude
-        );
+    const dist = getDistanceFromLatLonInM(
+      camCoords.latitude, camCoords.longitude,
+      entityCoords.latitude, entityCoords.longitude
+    );
 
-        if (dist <= this.data.range) {
-          this.triggeredOnce = true;
-          this.showQuestion();
-        }
-      },
-      showQuestion() {
-        const randomIndex = Math.floor(Math.random() * this.questions.length);
-        const questionData = this.questions[randomIndex];
-        if (!questionData) return;
+    if (dist <= this.data.range) {
+      this.triggeredOnce = true;
+      this.showQuestion();
+    }
+  },
+  showQuestion() {
+    const modal = document.getElementById('quizModal');
+    const planetTitle = document.getElementById('quizPlanetName');
+    const qText = document.getElementById('quizQuestion');
+    const answersContainer = document.getElementById('quizAnswers');
 
-        const planetEl = this.el;
-        const modal = document.getElementById('quizModal');
-        const planetTitle = document.getElementById('quizPlanetName');
-        planetTitle.textContent = this.el.getAttribute('name') || 'Planeta';
-        const qText = document.getElementById('quizQuestion');
-        const answersContainer = document.getElementById('quizAnswers');
+    // escolhe uma pergunta qualquer (ou usa this.currentQuestionIndex se preferires ordem fixa)
+    const questionData = this.questions[Math.floor(Math.random() * this.questions.length)];
+    if (!questionData) return;
 
-        qText.textContent = questionData.question;
-        answersContainer.innerHTML = '';
+    planetTitle.textContent = this.el.getAttribute('name') || 'Planeta';
+    qText.textContent = questionData.question;
+    answersContainer.innerHTML = '';
 
-        questionData.answers.forEach((answer, i) => {
-          const btn = document.createElement('button');
-          btn.className = 'quiz-answer';
-          btn.textContent = answer;
+    const planetEl = this.el; // 👈 guarda referência ao <a-sphere>
 
-          btn.addEventListener('click', () => {
-          if (btn.classList.contains('clicked')) return;
-          btn.classList.add('clicked');
-          btn.disabled = true;
+    questionData.answers.forEach((answer, i) => {
+      const btn = document.createElement('button');
+      btn.className = 'quiz-answer';
+      btn.textContent = answer;
 
-          if (i === questionData.rightAnswer) {
-            btn.classList.add('correct');
-            score += pontos;
-            pontos = 4;
+      btn.addEventListener('click', () => {
+        if (btn.classList.contains('clicked')) return;
+        btn.classList.add('clicked');
+        btn.disabled = true;
 
-            updateScoreDisplay();
+        if (i === questionData.rightAnswer) {
+          btn.classList.add('correct');
+          score += pontos;
+          pontos = 4;
+          updateScoreDisplay();
 
-            this.currentQuestionIndex++;
-            if (this.currentQuestionIndex >= this.questions.length) {
-              this.triggeredOnce = true; // Desativa futuras perguntas
-
-              // ✅ Mostrar marca de conclusão no planeta
-              showCompletionMark(this.el);
-            } else {
-              this.triggeredOnce = false; // Permite próxima pergunta
-            }
-
-            setTimeout(() => {
-              modal.classList.remove('show');
-            }, 1000);
-          } else {
-            btn.classList.add('incorrect');
-            pontos -= 1;
-            updateScoreDisplay();
+          // ✅ mostra a marca imediatamente na 1ª resposta certa
+          if (!this.completed && !planetEl.querySelector('.completion-mark')) {
+            showCompletionMark(planetEl);
           }
-        });
-          answersContainer.appendChild(btn);
-        });
+          this.completed = true;      // bloqueia futuras perguntas neste planeta
+          this.triggeredOnce = true;  // impede tick de reabrir
 
-        modal.classList.add('show');
-      }
+          setTimeout(() => modal.classList.remove('show'), 800);
+        } else {
+          btn.classList.add('incorrect');
+          pontos -= 1;
+          updateScoreDisplay();
+
+          // permite nova pergunta se ainda não concluiu
+          this.triggeredOnce = false;
+          setTimeout(() => modal.classList.remove('show'), 600);
+        }
+      });
+
+      answersContainer.appendChild(btn);
     });
+
+    modal.classList.add('show');
+  }
+});
+
 
     AFRAME.registerComponent('planet-distance-tracker', {
       tick() {
