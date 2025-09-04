@@ -150,10 +150,14 @@
   </div>
 
   <script>
-    function startGame() {
-      document.getElementById("menu").style.display = "none";
-      document.getElementById("game").style.display = "block";
-    }
+   function startGame(factor = 1) {
+  distanceFactor = factor; // guarda o multiplicador
+  document.getElementById("menu-box").style.display = "none";
+  document.getElementById("game").style.display = "block";
+
+  initPlanetas(); // só carrega planetas depois de escolher modo
+}
+
 
     function toggleInstructions() {
   const instr = document.getElementById("instructions");
@@ -403,11 +407,10 @@ async function initPlanetas() {
   }
 }
 
-// E chama assim:
 document.addEventListener("DOMContentLoaded", () => {
-  initPlanetas();
   updateScoreDisplay();
 });
+
 
     function createOrbitRing(userLat, userLon, orbitDistance) {
       const ring = document.createElement("a-ring");
