@@ -261,24 +261,33 @@ function toggleDistanceMenu() {
     }
 
     AFRAME.registerComponent('dynamic-movement', {
-      schema: {
-        type: { type: 'string' },
-        speed: { type: 'number', default: 0.00001 },
-        originLat: { type: 'number' },
-        originLon: { type: 'number' },
-        distance: { type: 'number' }
-      },
-      init() {
-        this.angle = 0;
-      },
-      tick(time, timeDelta) {
-        if (this.data.type === "spin") {
-          this.angle += this.data.speed * timeDelta;
-          const newCoords = computeOffset(this.data.originLat, this.data.originLon, this.data.distance, this.angle * (180 / Math.PI));
-          this.el.setAttribute('gps-new-entity-place', { latitude: newCoords.lat, longitude: newCoords.lon });
-        }
-      }
+  schema: {
+    speed: { type: 'number', default: 0.00001 },
+    originLat: { type: 'number' },   // latitude fixa do foco
+    originLon: { type: 'number' },   // longitude fixa do foco
+    distance: { type: 'number' }     // raio da órbita em metros
+  },
+  init() {
+    this.angle = Math.random() * 360; // começa em ângulo aleatório
+  },
+  tick(time, timeDelta) {
+    this.angle += this.data.speed * timeDelta;
+
+    // calcula coordenadas fixas da órbita (NÃO dependem da câmara!)
+    const newCoords = computeOffset(
+      this.data.originLat,
+      this.data.originLon,
+      this.data.distance,
+      this.angle
+    );
+
+    this.el.setAttribute("gps-new-entity-place", {
+      latitude: newCoords.lat,
+      longitude: newCoords.lon
     });
+  }
+});
+
 
     AFRAME.registerComponent('proximity-check', {
   schema: {
