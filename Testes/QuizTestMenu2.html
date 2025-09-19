@@ -262,7 +262,7 @@ function toggleDistanceMenu() {
 
     AFRAME.registerComponent('dynamic-movement', {
   schema: {
-    speed: { type: 'number', default: 0.00001 },
+    speed: { type: 'number', default: 1 },
     originLat: { type: 'number' },   // latitude fixa do foco
     originLon: { type: 'number' },   // longitude fixa do foco
     distance: { type: 'number' }     // raio da órbita em metros
@@ -445,7 +445,7 @@ function toggleDistanceMenu() {
   mark.setAttribute("text", { value: "✔ Certo", align: "center", color: "#fff", width: scaleFactor * 3 });
 
   // colocar acima do planeta
-  mark.setAttribute("position", `0 5 0`);
+  mark.setAttribute("position", `0 7 0`);
 
   // sempre olhar para a câmara
   mark.setAttribute("look-at", "[gps-new-camera]");
