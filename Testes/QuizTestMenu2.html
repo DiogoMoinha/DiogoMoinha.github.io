@@ -218,7 +218,7 @@
   document.getElementById("menu-box").style.display = "none";
   document.getElementById("game").style.display = "block";
 
-  initPlanetas(); // só carrega planetas depois de escolher modo
+  //initPlanetas(); // só carrega planetas depois de escolher modo
 }
 
 
@@ -481,6 +481,7 @@ async function initPlanetas() {
 
 document.addEventListener("DOMContentLoaded", () => {
   updateScoreDisplay();
+  initPlanetas();
 });
 
 
@@ -539,3 +540,4 @@ document.addEventListener("DOMContentLoaded", () => {
   </script>
 </body>
 </html>
+
