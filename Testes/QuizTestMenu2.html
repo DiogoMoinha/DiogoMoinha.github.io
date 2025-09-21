@@ -33,14 +33,18 @@
     }
 
     #menu-box {
-      background: rgba(0,0,0,0.8);
-      padding: 30px;
-      border-radius: 15px;
-      text-align: center;
-      color: white;
-      max-width: 400px;
-      width: 90%;
-    }
+  background: rgba(0,0,0,0.8);
+  padding: 30px;
+  border-radius: 15px;
+  text-align: center;
+  color: white;
+  max-width: 400px;
+  width: 90%;
+
+  max-height: 90vh;   /* ocupa no máximo 90% da tela */
+  overflow-y: auto;   /* ativa scrollbar quando passar do limite */
+}
+
 
     #menu-box h1 {
       margin-bottom: 20px;
@@ -540,4 +544,5 @@ document.addEventListener("DOMContentLoaded", () => {
   </script>
 </body>
 </html>
+
 
